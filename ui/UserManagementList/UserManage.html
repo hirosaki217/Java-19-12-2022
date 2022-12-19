@@ -15,13 +15,16 @@
             body {
                 font-family: Arial;
             }
-
+            .header-nav {
+                background-color: #f1f1f1;
+                border: 1px solid #ccc;
+            }
             /* Style the tab */
             .tab {
                 overflow: hidden;
-                border: 1px solid #ccc;
                 background-color: #f1f1f1;
                 height: 50px;
+                flex: 1;
             }
 
             /* Style the buttons inside the tab */
@@ -61,29 +64,33 @@
                 height: 5px;
                 background-color: slateblue;
             }
-            .right {
-                width: 318px;
-            }
+
             .pagination-nav {
                 justify-self: flex-end;
             }
             .pagination-helper {
                 justify-self: flex-end;
             }
+            .modal-content,
+            .modal-body {
+                width: 800px;
+            }
         </style>
     </head>
     <body>
-        <div class="tab d-flex">
-            <img class="logo" src="./logo.png" alt="logo" />
+        <div class="d-flex justify-content-center header-nav">
+            <div class="tab d-flex">
+                <img class="logo" src="./logo.png" alt="logo" />
 
-            <button class="tablinks" onclick="openCity(event, 'Product')">Sản phẩm</button>
-            <button class="tablinks" onclick="openCity(event, 'Customer')">Khách hàng</button>
-            <button class="tablinks" onclick="openCity(event, 'User')">Users</button>
-            <div class="account mr-0 align-self-lg-end">
-                <h4>Admin</h4>
+                <button class="tablinks" onclick="openCity(event, 'Product')">Sản phẩm</button>
+                <button class="tablinks" onclick="openCity(event, 'Customer')">Khách hàng</button>
+                <button class="tablinks" onclick="openCity(event, 'User')">Users</button>
+            </div>
+            <div class="account mr-auto d-flex align-items-center d-flex px-4">
+                <img style="width: 15px" src="./user-solid.svg" class="" alt="user" />
+                <h4 class="pb-0 px-2 mb-0">Admin</h4>
             </div>
         </div>
-
         <div id="Product" class="tabcontent">
             <h3>product</h3>
         </div>
@@ -96,50 +103,63 @@
             <h3>Users</h3>
             <p class="line-blue"></p>
 
-            <div class="search-input d-flex">
-                <div class="form-group ml-5 mr-md-5 pr-5">
-                    <label for="name">Tên</label>
-                    <input type="text" class="form-control" id="name" placeholder="Nhập họ tên" />
-                    <!-- <small id="emailHelp" class="form-text text-muted"
-                        >We'll never share your email with anyone else.</small
-                    > -->
-                </div>
-                <div class="form-group mr-5 pr-5">
-                    <label for="email">Email</label>
-                    <input type="text" class="form-control" id="email" placeholder="Nhập email" />
-                    <!-- <small id="emailHelp" class="form-text text-muted"
-                        >We'll never share your email with anyone else.</small
-                    > -->
-                </div>
-                <div class="form-group mr-5 pr-5">
-                    <label for="group">Tên</label>
-                    <input type="text" class="form-control" id="group" placeholder="Chọn nhóm" />
-                    <!-- <small id="emailHelp" class="form-text text-muted"
-                        >We'll never share your email with anyone else.</small
-                    > -->
-                </div>
-                <div class="form-group mr-5">
-                    <label for="inputState">Tên</label>
-                    <select id="inputState" class="form-control pr-5">
-                        <option selected>Chọn trạng thái</option>
-                        <option>Đóng</option>
-                        <option>Mở</option>
-                    </select>
-                    <!-- <small id="emailHelp" class="form-text text-muted"
-                        >We'll never share your email with anyone else.</small
-                    > -->
+            <div class="wrapper-action d-flex justify-content-center">
+                <div class="action-form">
+                    <div class="search-input d-flex">
+                        <div class="form-group mr-4">
+                            <label for="name">Tên</label>
+                            <input type="text" class="form-control" id="name" placeholder="Nhập họ tên" />
+                            <!-- <small id="emailHelp" class="form-text text-muted"
+                                >We'll never share your email with anyone else.</small
+                            > -->
+                        </div>
+                        <div class="form-group mr-4">
+                            <label for="email">Email</label>
+                            <input type="text" class="form-control" id="email" placeholder="Nhập email" />
+                            <!-- <small id="emailHelp" class="form-text text-muted"
+                                >We'll never share your email with anyone else.</small
+                            > -->
+                        </div>
+                        <div class="form-group mr-4">
+                            <label for="group">Tên</label>
+                            <input type="text" class="form-control" id="group" placeholder="Chọn nhóm" />
+                            <!-- <small id="emailHelp" class="form-text text-muted"
+                                >We'll never share your email with anyone else.</small
+                            > -->
+                        </div>
+                        <div class="form-group mr-4">
+                            <label for="inputState">Tên</label>
+                            <select id="inputState" class="form-control pr-5">
+                                <option selected>Chọn trạng thái</option>
+                                <option>Đóng</option>
+                                <option>Mở</option>
+                            </select>
+                            <!-- <small id="emailHelp" class="form-text text-muted"
+                                >We'll never share your email with anyone else.</small
+                            > -->
+                        </div>
+                    </div>
+
+                    <div class="action d-flex justify-content-between">
+                        <div class="left">
+                            <button
+                                type="button"
+                                class="btn btn-primary"
+                                data-toggle="modal"
+                                data-target="#exampleModal"
+                                class="btn-primary btn"
+                            >
+                                Thêm mới
+                            </button>
+                        </div>
+                        <div class="right">
+                            <button class="btn-primary btn">Tìm kiếm</button>
+                            <button class="btn-success btn">Xóa tìm</button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div class="action d-flex justify-content-between px-5">
-                <div class="left">
-                    <button class="btn-primary btn">Thêm mới</button>
-                </div>
-                <div class="right">
-                    <button class="btn-primary btn">Tìm kiếm</button>
-                    <button class="btn-success btn">Xóa tìm</button>
-                </div>
-            </div>
             <div class="pagination d-flex justify-content-center align-items-center">
                 <div class="d-flex align-items-center">
                     <nav aria-label="Page navigation example" class="px-3 pagination-nav">
@@ -242,6 +262,72 @@
                     </nav>
                 </div>
             </div>
+            <!-- Modal -->
+            <div
+                class="modal fade"
+                id="exampleModal"
+                tabindex="-1"
+                aria-labelledby="exampleModalLabel"
+                aria-hidden="true"
+            >
+                <div class="modal-dialog d-flex justify-content-center">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Thêm user/ Chỉnh sửa User</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form>
+                                <div class="form-group row">
+                                    <label for="modalName" class="col-sm-2 col-form-label">Tên</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" id="modalName" />
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="modalEmail" class="col-sm-2 col-form-label">Email</label>
+                                    <div class="col-sm-10">
+                                        <input type="email" class="form-control" id="modalEmail" />
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="modalPassword" class="col-sm-2 col-form-label">Mật khẩu</label>
+                                    <div class="col-sm-10">
+                                        <input type="password" class="form-control" id="modalPassword" />
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="modalRePassword" class="col-sm-2 col-form-label">Xác nhận</label>
+                                    <div class="col-sm-10">
+                                        <input type="password" class="form-control" id="modalRePassword" />
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="modalGroup" class="col-sm-2 col-form-label">Nhóm</label>
+                                    <div class="col-sm-10">
+                                        <select id="modalGroup" class="form-control pr-5">
+                                            <option selected>Chọn nhóm</option>
+                                            <option>Admin</option>
+                                            <option>abc</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="" class="col-sm-2 col-form-label">Trạng thái</label>
+                                    <div class="col-sm-10">TRUE</div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                            <button type="button" class="btn btn-primary">Lưu</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- end modal -->
         </div>
 
         <script>
