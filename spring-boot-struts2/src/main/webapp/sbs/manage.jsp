@@ -1,3 +1,5 @@
+<%@ taglib prefix="s" uri="/struts-tags" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -64,39 +66,41 @@
                 height: 5px;
                 background-color: slateblue;
             }
-            .pagination-top {
-                width: 1280px;
-            }
+
             .pagination-nav {
-                flex: 5;
+                justify-self: flex-end;
             }
             .pagination-helper {
-                flex: 5;
+                justify-self: flex-end;
             }
             .modal-content,
             .modal-body {
                 width: 800px;
             }
             .icon-green {
-                filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(118%) contrast(119%);
-            }
-            .icon-red {
-                filter: invert(11%) sepia(96%) saturate(5728%) hue-rotate(343deg) brightness(93%) contrast(89%);
-            }
+                            filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(118%) contrast(119%);
+                        }
+                        .icon-red {
+                            filter: invert(11%) sepia(96%) saturate(5728%) hue-rotate(343deg) brightness(93%) contrast(89%);
+                        }
         </style>
     </head>
     <body>
         <div class="d-flex justify-content-center header-nav">
             <div class="tab d-flex">
-                <img class="logo" src="./logo.png" alt="logo" />
+                <img class="logo" src="../resources/logo.png" alt="logo" />
 
                 <button class="tablinks" onclick="openCity(event, 'Product')">Sản phẩm</button>
                 <button class="tablinks" onclick="openCity(event, 'Customer')">Khách hàng</button>
                 <button class="tablinks" onclick="openCity(event, 'User')">Users</button>
             </div>
             <div class="account mr-auto d-flex align-items-center d-flex px-4">
-                <img style="width: 15px" src="./user-solid.svg" class="" alt="user" />
-                <h4 class="pb-0 px-2 mb-0">Admin</h4>
+                <img style="width: 15px" src="../resources/user-solid.svg" class="" alt="user" />
+
+                <h4 class="pb-0 px-2 mb-0">
+                    user:
+                    <s:property value="#session['USER']" />
+                </h4>
             </div>
         </div>
         <div id="Product" class="tabcontent">
@@ -169,8 +173,8 @@
             </div>
 
             <div class="pagination d-flex justify-content-center align-items-center">
-                <div class="d-flex align-items-center pagination-top">
-                    <nav aria-label="Page navigation example" class="px-3 pagination-nav d-flex justify-content-end">
+                <div class="d-flex align-items-center">
+                    <nav aria-label="Page navigation example" class="px-3 pagination-nav">
                         <ul class="pagination">
                             <li class="page-item">
                                 <a class="page-link" href="#" aria-label="Previous">
@@ -187,7 +191,7 @@
                             </li>
                         </ul>
                     </nav>
-                    <p class="text-right pagination-helper">Hiển thị từ 1 ~ 10 trong tổng số 100 user</p>
+                    <p class="pagination-helper">Hiển thị từ 1 ~ 10 trong tổng số 100 user</p>
                 </div>
             </div>
 
@@ -204,64 +208,54 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <th scope="row">1</th>
-                            <td>Mark</td>
-                            <td>Otto</td>
-                            <td>@mdo</td>
-                            <td class="text-success">Đang hoạt động</td>
-                            <td>
-                                <a href=""
-                                    ><img class="icon-green" style="width: 15px" src="./pen-solid.svg" alt="edit"
-                                /></a>
+                        <s:iterator value="users" >
+                                        <tr >
+                                            <td></td>
+                                            <td class="nowrap"><s:property value="name"/></td>
+                                            <td class="nowrap"><s:property value="email"/></td>
+                                            <td class="nowrap"><s:property value="groups"/></td>
 
-                                <a href="">
-                                    <img
-                                        class="icon-red"
-                                        style="width: 15px"
-                                        src="./trash-can-solid.svg"
-                                        alt="delete"
-                                    />
-                                </a>
-                                <a href="">
-                                    <img style="width: 15px" src="./user-xmark-solid.svg" alt="lock or unlock" />
-                                </a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th scope="row">2</th>
-                            <td>Jacob</td>
-                            <td>Thornton</td>
-                            <td>@fat</td>
-                            <td class="text-success">Đang hoạt động</td>
-                            <td>
-                                <img style="width: 15px" src="./pen-solid.svg" alt="edit" />
 
-                                <img style="width: 15px" src="./trash-can-solid.svg" alt="delete" />
+                                            <td class="nowrap">
+                                                <s:if test="status">
+                                                    <span class="text-success">Đang hoạt động</span>
+                                                </s:if>
+                                                <s:else>
+                                                    <span class="text-danger">Tạm khóa</span>
+                                                </s:else>
+                                            </td>
 
-                                <img style="width: 15px" src="./user-xmark-solid.svg" alt="lock or unlock" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <th scope="row">3</th>
-                            <td>Larry</td>
-                            <td>the Bird</td>
-                            <td>@twitter</td>
-                            <td class="text-danger">Tạm khóa</td>
-                            <td>
-                                <img style="width: 15px" src="./pen-solid.svg" alt="edit" />
+<td class="nowrap">
+                                                <s:url action="edit" var="url">
+                                                    <s:param name="user.email" value="email"/>
+                                                </s:url>
+                                                <a href="<s:property value="#url"/>">
+                                                    <img class="icon-green" style="width: 15px" src="../resources/pen-solid.svg" alt="edit" />
+                                                </a>
+                                                &nbsp;&nbsp;&nbsp;
+                                                <s:url action="delete" var="url">
+                                                      <s:param name="user.email" value="email"/>
+                                                </s:url>
+                                                <a href="<s:property value="#url"/>">
+                                                    <img class="icon-red" style="width: 15px" src="../resources/trash-can-solid.svg" alt="delete" />
+                                                </a>
+                                                &nbsp;&nbsp;&nbsp;
+                                                                                                <s:url action="lockPerson" var="url">
+                                                                                                    <s:param name="user.email" value="email"/>
+                                                                                                </s:url>
+                                                                                                <a href="<s:property value="#url"/>">
+                                                                                                    <img style="width: 15px" src="../resources/user-xmark-solid.svg" alt="lock or unlock" />
+                                                                                                </a>
+                                            </td>
+                                        </tr>
+                                    </s:iterator>
 
-                                <img style="width: 15px" src="./trash-can-solid.svg" alt="delete" />
-
-                                <img style="width: 15px" src="./user-xmark-solid.svg" alt="lock or unlock" />
-                            </td>
-                        </tr>
                     </tbody>
                 </table>
             </div>
             <div class="pagination d-flex justify-content-center align-items-center">
-                <div class="d-flex align-items-center pagination-top">
-                    <nav aria-label="Page navigation example" class="px-3 pagination-nav d-flex justify-content-end">
+                <div class="d-flex align-items-center">
+                    <nav aria-label="Page navigation example" class="px-3 pagination-nav">
                         <ul class="pagination">
                             <li class="page-item">
                                 <a class="page-link" href="#" aria-label="Previous">
@@ -278,7 +272,6 @@
                             </li>
                         </ul>
                     </nav>
-                    <p class="text-right pagination-helper"></p>
                 </div>
             </div>
             <!-- Modal -->
@@ -389,3 +382,45 @@
         ></script>
     </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+<!--
+<td class="nowrap">
+                                                <s:url action="inputPerson" var="url">
+                                                    <s:param name="person.personId" value="personId"/>
+                                                </s:url>
+                                                <a href="<s:property value="#url"/>">
+                                                    <img style="width: 15px" src="./pen-solid.svg" alt="edit" />
+                                                </a>
+                                                &nbsp;&nbsp;&nbsp;
+                                                <s:url action="deletePerson" var="url">
+                                                    <s:param name="person.personId" value="personId"/>
+                                                </s:url>
+                                                <a href="<s:property value="#url"/>">
+                                                    <img style="width: 15px" src="./trash-can-solid.svg" alt="delete" />
+                                                </a>
+                                                &nbsp;&nbsp;&nbsp;
+                                                                                                <s:url action="lockPerson" var="url">
+                                                                                                    <s:param name="person.personId" value="personId"/>
+                                                                                                </s:url>
+                                                                                                <a href="<s:property value="#url"/>">
+                                                                                                    <img style="width: 15px" src="./user-xmark-solid.svg" alt="lock or unlock" />
+                                                                                                </a>
+                                            </td>
+-->
+
+
+
+
+
+
+
+
