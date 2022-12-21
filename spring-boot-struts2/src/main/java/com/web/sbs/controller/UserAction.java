@@ -4,6 +4,7 @@ import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.interceptor.ParameterNameAware;
 import com.web.sbs.model.User;
 import com.web.sbs.repository.UserRepository;
+import com.web.sbs.utitls.PageUtils;
 import org.apache.struts2.interceptor.SessionAware;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,6 +22,39 @@ public class UserAction extends ActionSupport  implements SessionAware, Paramete
     public static final String USER ="USER";
     private boolean remember;
 
+    private int page;
+    private int size = 5;
+
+    private int totalPages = 0;
+
+    private String name, email, groups, password;
+    private boolean active;
+
+    public int getTotalPages() {
+        return totalPages;
+    }
+
+    public void setTotalPages(int totalPages) {
+        this.totalPages = totalPages;
+    }
+
+    public int getPage() {
+        return page;
+    }
+
+    public void setPage(int page) {
+        this.page = page;
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
+    }
+
+
 
     public boolean isRemember() {
         return remember;
@@ -33,17 +67,49 @@ public class UserAction extends ActionSupport  implements SessionAware, Paramete
     private User user;
 
 
-    private User[] users;
+    private List<User> users;
 
     private Map<String, Object> userSession;
-    public User[] getUsers(){
+    public List<User> getUsers(){
         return users;
     }
 
     public String list(){
+            int totalRecord = userRepository.findAll().size();
+            PageUtils pageUtils = new PageUtils(page, size, totalRecord);
+            setTotalPages(pageUtils.getTotalPages());
+            this.users = userRepository.findUsers(pageUtils.getNext(), size);
+        System.out.println(users);
+        System.out.println(userSession.get(REMEMBER_TOKEN));
+        return SUCCESS;
+    }
+    public String insert(){
+        User user = new User(email, name, groups, active, password);
+        user.setCreatedAt(new Date());
+        try {
+            userRepository.addUser(user);
+        }catch (Exception e){
+            System.out.println(e);
+        }
+        return SUCCESS;
+    }
+    public String search() throws Exception{
+        User user = new User(email, name, groups, active);
+        try {
+            userRepository.findUserByOption(user);
 
+        }catch (Exception e){
+            System.out.println(e);
+        }
+        int totalRecord = userRepository.findUserByOption(user).size();
 
-            users = userRepository.findAll().toArray(new User[0]);
+        PageUtils pageUtils = new PageUtils(page, size, totalRecord);
+        setTotalPages(pageUtils.getTotalPages());
+        this.users = userRepository.findUserByOptions(user, pageUtils.getNext(), size);
+        System.out.println("DÂSSSASDADSASD" + totalRecord);
+
+        System.out.println(users);
+
 
         System.out.println(userSession.get(REMEMBER_TOKEN));
         return SUCCESS;
@@ -130,4 +196,49 @@ public class UserAction extends ActionSupport  implements SessionAware, Paramete
     }
 
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getGroups() {
+        return groups;
+    }
+
+    public void setGroups(String groups) {
+        this.groups = groups;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+    public void setIsActive(boolean active) {
+        this.active = active;
+    }
+    public boolean getIsActive() {
+        return active;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 }

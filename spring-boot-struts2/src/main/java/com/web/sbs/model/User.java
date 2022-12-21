@@ -11,10 +11,13 @@ public class User {
     private String email;
     private String name;
 
+    private Date createdAt = new Date();
 
 
     private String groups;
-    private boolean status = true;
+
+
+    private boolean active;
     private String password;
 
     private Date lastLogin;
@@ -27,7 +30,26 @@ public class User {
     public void setLastLogin(Date lastLogin) {
         this.lastLogin = lastLogin;
     }
+    public Date getCreatedAt() {
+        return createdAt;
+    }
 
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+    public boolean getIsActive() {
+        return active;
+    }
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+    public void setIsActive(boolean active) {
+        this.active = active;
+    }
     public String getIpLastLogin() {
         return ipLastLogin;
     }
@@ -36,12 +58,19 @@ public class User {
         this.ipLastLogin = ipLastLogin;
     }
 
-    public User(String email, String name, String groups, boolean status, String password) {
+    public User(String email, String name, String groups, boolean active, String password) {
         this.email = email;
         this.name = name;
         this.groups = groups;
-        this.status = status;
+        this.active = active;
         this.password = password;
+    }
+
+    public User(String email, String name, String groups, boolean active) {
+        this.email = email;
+        this.name = name;
+        this.groups = groups;
+        this.active = active;
     }
 
     public User() {
@@ -76,13 +105,7 @@ public class User {
         this.groups = groups;
     }
 
-    public boolean isStatus() {
-        return status;
-    }
 
-    public void setStatus(boolean status) {
-        this.status = status;
-    }
 
     public String getPassword() {
         return password;
@@ -98,7 +121,8 @@ public class User {
                 "email='" + email + '\'' +
                 ", name='" + name + '\'' +
                 ", groups='" + groups + '\'' +
-                ", status=" + status +
+                ", createdAt='" + createdAt + '\'' +
+                ", isActive=" + active +
                 '}';
     }
 }

@@ -37,5 +37,16 @@
         </action>
 
     </package>
+    <package name="default" extends="json-default">
+        <action name="listuser" class="com.web.sbs.controller.UserAction" method="list">
+            <result name="success" type="json"></result>
+        </action>
+        <action name="searchuser" class="com.web.sbs.controller.UserAction" method="search">
+            <result name="success" type="json"></result>
+        </action>
+        <action name="insertuser" class="com.web.sbs.controller.UserAction" method="insert">
+            <result name="success" type="json"></result>
+        </action>
+    </package>
 
 </struts>
