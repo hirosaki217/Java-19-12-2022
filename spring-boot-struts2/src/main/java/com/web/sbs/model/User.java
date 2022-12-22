@@ -15,11 +15,11 @@ public class User {
 
 
     private String groups;
-
+    private boolean isDelete =false;
 
     private boolean active;
     private String password;
-
+    private String rememberToken;
     private Date lastLogin;
     private String ipLastLogin;
 
@@ -54,10 +54,26 @@ public class User {
         return ipLastLogin;
     }
 
+    public boolean isDelete() {
+        return isDelete;
+    }
+
+    public void setDelete(boolean delete) {
+        isDelete = delete;
+    }
+
     public void setIpLastLogin(String ipLastLogin) {
         this.ipLastLogin = ipLastLogin;
     }
 
+    /**
+     *
+     * @param email
+     * @param name
+     * @param groups
+     * @param active
+     * @param password
+     */
     public User(String email, String name, String groups, boolean active, String password) {
         this.email = email;
         this.name = name;
@@ -65,6 +81,14 @@ public class User {
         this.active = active;
         this.password = password;
     }
+
+    /**
+     *
+     * @param email
+     * @param name
+     * @param groups
+     * @param active
+     */
 
     public User(String email, String name, String groups, boolean active) {
         this.email = email;
@@ -76,6 +100,11 @@ public class User {
     public User() {
     }
 
+    /**
+     *
+     * @param email
+     * @param password
+     */
     public User(String email, String password) {
         this.email = email;
         this.password = password;
@@ -105,7 +134,13 @@ public class User {
         this.groups = groups;
     }
 
+    public String getRememberToken() {
+        return rememberToken;
+    }
 
+    public void setRememberToken(String rememberToken) {
+        this.rememberToken = rememberToken;
+    }
 
     public String getPassword() {
         return password;
@@ -123,6 +158,7 @@ public class User {
                 ", groups='" + groups + '\'' +
                 ", createdAt='" + createdAt + '\'' +
                 ", isActive=" + active +
+                ", is_delete=" + isDelete +
                 '}';
     }
 }

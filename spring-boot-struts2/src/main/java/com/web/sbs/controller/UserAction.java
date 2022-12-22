@@ -5,17 +5,24 @@ import com.opensymphony.xwork2.interceptor.ParameterNameAware;
 import com.web.sbs.model.User;
 import com.web.sbs.repository.UserRepository;
 import com.web.sbs.utitls.PageUtils;
+import com.web.sbs.utitls.StringUtils;
+import org.apache.struts2.interceptor.ServletRequestAware;
+import org.apache.struts2.interceptor.ServletResponseAware;
 import org.apache.struts2.interceptor.SessionAware;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.net.InetAddress;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Component
-public class UserAction extends ActionSupport  implements SessionAware, ParameterNameAware {
+public class UserAction extends ActionSupport  implements SessionAware, ParameterNameAware, ServletResponseAware, ServletRequestAware {
     @Autowired
     UserRepository userRepository;
     public static final String REMEMBER_TOKEN ="remember_token";
@@ -31,7 +38,7 @@ public class UserAction extends ActionSupport  implements SessionAware, Paramete
     private boolean active;
 
     private User user;
-
+    private String nameCurrentUser;
 
     private List<User> users;
 
@@ -39,7 +46,7 @@ public class UserAction extends ActionSupport  implements SessionAware, Paramete
     public List<User> getUsers(){
         return users;
     }
-
+//    getter setter ...
 
     public int getTotalPages() {
         return totalPages;
@@ -74,181 +81,6 @@ public class UserAction extends ActionSupport  implements SessionAware, Paramete
     public void setRemember(boolean remember) {
         this.remember = remember;
     }
-
-
-
-    public String list(){
-//        if(userSession.get(USER) == null){
-//            return "login";
-//        }
-            int totalRecord = userRepository.findAll().size();
-            PageUtils pageUtils = new PageUtils(page, size, totalRecord);
-            setTotalPages(pageUtils.getTotalPages());
-            this.users = userRepository.findUsers(pageUtils.getNext(), size);
-        System.out.println(users);
-        System.out.println(userSession.get(USER));
-        return SUCCESS;
-    }
-    public String insert(){
-        User user = new User(email, name, groups, active, password);
-        user.setCreatedAt(new Date());
-        System.out.println("INSERT "+ user);
-        try {
-            userRepository.addUser(user);
-        }catch (Exception e){
-            System.out.println(e);
-        }
-        return SUCCESS;
-    }
-
-    public String update(){
-        User user = new User(email, name, groups, active, password);
-//        user.setCreatedAt(new Date());
-        try {
-            userRepository.updateUser(user);
-        }catch (Exception e){
-            System.out.println(e);
-        }
-        return SUCCESS;
-    }
-    public String search() throws Exception{
-        User user = new User(email, name, groups, active);
-        System.out.println(user);
-        try {
-            userRepository.findUserByOption(user);
-
-        }catch (Exception e){
-            System.out.println(e);
-        }
-        int totalRecord = userRepository.findUserByOption(user).size();
-
-        PageUtils pageUtils = new PageUtils(page, size, totalRecord);
-        setTotalPages(pageUtils.getTotalPages());
-        this.users = userRepository.findUserByOptions(user, pageUtils.getNext(), size);
-        System.out.println("DÂSSSASDADSASD" + totalRecord);
-
-        System.out.println(users);
-
-
-        System.out.println(userSession.get(USER));
-        return SUCCESS;
-    }
-    public String get(){
-
-        try {
-            this.user =  userRepository.getUser(email);
-            System.out.println("USER "+ user);
-        }catch (Exception e){
-            System.out.println(e);
-        }
-        return SUCCESS;
-    }
-
-    public String delete(){
-        try {
-            userRepository.deleteUser(email);
-        }catch (Exception e){
-            System.out.println(e);
-        }
-        return SUCCESS;
-    }
-
-    public String toogleLockUser(){
-        try {
-            userRepository.toogleLockUser(active, email);
-        }catch (Exception e){
-            System.out.println(e);
-        }
-        return SUCCESS;
-    }
-
-    @Override
-    public String execute() throws Exception {
-        InetAddress IP =InetAddress.getLocalHost();
-
-        if(user.getEmail().length() > 0){
-
-            User userDB = userRepository.getUserByEmail(user.getEmail());
-            userDB.setLastLogin(new Date());
-            userDB.setIpLastLogin(IP.getHostAddress());
-
-            try {
-                if(userDB != null){
-
-                    boolean matchPassword = user.getPassword().equals( userDB.getPassword());
-                    if(matchPassword){
-
-                        userSession.put(USER, user.getEmail());
-                        userRepository.updateUser(userDB);
-
-                        if(isRemember()){
-                            System.out.println("REMMEMBER ");
-//                        save to session
-                        }
-                        System.out.println(userDB);
-                        return SUCCESS;
-
-                    }
-
-                }
-            }catch (Exception e){
-                System.out.println(e);
-            }
-
-        }
-
-        return INPUT;
-
-    }
-
-//    public boolean isRemember(){
-//        return  remember;
-//    }
-
-//    public void setRemember(boolean remember){
-//        this.remember = remember;
-//    }
-
-
-
-    public List<User> getListUsers(){
-        return userRepository.findAll();
-    }
-
-    public User getUser(){
-        return user;
-    }
-
-    public void setUser(User user){
-        this.user = user;
-
-    }
-
-
-    public void validate(){
-        try {
-            if (user.getEmail().length() == 0 || user.getEmail() == null) {
-                addFieldError("user.email", "Email không được để trống");
-            }
-
-            if (user.getPassword().length() == 0) {
-                addFieldError("user.password", "Password không được để trống");
-            }
-        }catch (Exception e){}
-
-    }
-
-    @Override
-    public boolean acceptableParameterName(String parameterName) {
-        return !parameterName.contains("session") && !parameterName.contains("request");
-    }
-
-    @Override
-    public void setSession(Map<String, Object> session) {
-        userSession = session;
-    }
-
-
     public String getName() {
         return name;
     }
@@ -294,4 +126,239 @@ public class UserAction extends ActionSupport  implements SessionAware, Paramete
     public void setPassword(String password) {
         this.password = password;
     }
+
+    public List<User> getListUsers(){
+        return userRepository.findAll();
+    }
+
+    public User getUser(){
+        return user;
+    }
+
+    public void setUser(User user){
+
+        this.user = user;
+
+    }
+//FUNCTION
+// For access to the raw servlet request / response, eg for cookies
+    protected HttpServletResponse servletResponse;
+    @Override
+    public void setServletResponse(HttpServletResponse servletResponse) {
+        this.servletResponse = servletResponse;
+    }
+
+    protected HttpServletRequest servletRequest;
+    @Override
+    public void setServletRequest(HttpServletRequest servletRequest) {
+        this.servletRequest = servletRequest;
+    }
+
+
+// list user
+    public String list(){
+        if(getRememberToken() == null)
+            return "login";
+        int totalRecord = userRepository.findAll().size();
+        PageUtils pageUtils = new PageUtils(page, size, totalRecord);
+        setTotalPages(pageUtils.getTotalPages());
+        this.users = userRepository.findUsers(pageUtils.getNext(), size);
+        System.out.println(users);
+        System.out.println(userSession.get(USER));
+        return SUCCESS;
+    }
+
+//    insert user
+    public String insert(){
+        User user = new User(email, name, groups, active, password);
+        user.setCreatedAt(new Date());
+        user.setDelete(false);
+        System.out.println("INSERT "+ user);
+        try {
+            userRepository.addUser(user);
+        }catch (Exception e){
+            System.out.println(e);
+        }
+        return SUCCESS;
+    }
+
+//    update user
+    public String update(){
+        User user = new User(email, name, groups, active, password);
+//        user.setCreatedAt(new Date());
+        try {
+            userRepository.updateUser(user);
+        }catch (Exception e){
+            System.out.println(e);
+        }
+        return SUCCESS;
+    }
+//    search
+    public String search() throws Exception{
+        User user = new User(email, name, groups, active);
+        System.out.println(user);
+        try {
+            userRepository.findUserByOption(user);
+
+        }catch (Exception e){
+            System.out.println(e);
+        }
+        int totalRecord = userRepository.findUserByOption(user).size();
+
+        PageUtils pageUtils = new PageUtils(page, size, totalRecord);
+        setTotalPages(pageUtils.getTotalPages());
+        this.users = userRepository.findUserByOptions(user, pageUtils.getNext(), size);
+
+
+
+        System.out.println(userSession.get(USER));
+        return SUCCESS;
+    }
+
+//    get user
+    public String get(){
+
+        try {
+            this.user =  userRepository.getUser(email);
+            System.out.println("USER "+ user);
+        }catch (Exception e){
+            System.out.println(e);
+        }
+        return SUCCESS;
+    }
+// delete usser
+    public String delete(){
+        try {
+            userRepository.deleteUser(email);
+        }catch (Exception e){
+            System.out.println(e);
+        }
+        return SUCCESS;
+    }
+// change status user
+    public String toogleLockUser(){
+        try {
+            userRepository.toogleLockUser(active, email);
+        }catch (Exception e){
+            System.out.println(e);
+        }
+        return SUCCESS;
+    }
+
+
+    public String checkLogin(){
+        if(getRememberToken() != null)
+            return SUCCESS;
+        return "login";
+
+    }
+    public String login() throws Exception{
+        InetAddress IP =InetAddress.getLocalHost();
+        String token = UUID.randomUUID().toString();
+        if(user==null){
+            if(getRememberToken()== null)
+                return SUCCESS;
+            return "manager";
+        }
+        if(user.getEmail().length() > 0){
+            User userDB = userRepository.getUserByEmail(user.getEmail());
+            userDB.setLastLogin(new Date());
+            userDB.setIpLastLogin(IP.getHostAddress());
+            userDB.setRememberToken(token);
+            try {
+                if(userDB != null){
+                    System.out.println("USER "+user.getPassword() + userDB.getPassword());
+
+                    boolean matchPassword = user.getPassword().equals( userDB.getPassword());
+                    if(matchPassword){
+                        userRepository.updateLastLogin(userDB);
+                        if(isRemember()){
+                            System.out.println("REMMEMBER ");
+//                        save to session
+                        }
+                        System.out.println(userDB);
+                        Cookie cookie = new Cookie(REMEMBER_TOKEN, token);
+                        String name = StringUtils.removeAccent(userDB.getName()).replace(" ", "_");
+                        Cookie cookieName = new Cookie(USER, name);
+                        servletResponse.addCookie(cookie);
+                        servletResponse.addCookie(cookieName);
+                        return "manager";
+
+                    }
+
+                }
+            }catch (Exception e){
+                System.out.println(e);
+            }
+
+        }
+
+        return INPUT;
+
+    }
+//  load page manage
+    @Override
+    public String execute() throws Exception {
+        InetAddress IP =InetAddress.getLocalHost();
+        String token = UUID.randomUUID().toString();
+        String tokenRequest = getRememberToken();
+
+
+        if(tokenRequest != null){
+
+            User userDB = userRepository.findUserByToken(tokenRequest);
+            System.out.println("SESSION "+userDB);
+            if(userDB != null){
+                return SUCCESS;
+            }
+        }
+        return "login";
+    }
+
+    public String getRememberToken(){
+        for(Cookie c : servletRequest.getCookies()){
+            if(c.getName().equals(REMEMBER_TOKEN))
+                return c.getValue();
+        }
+        return null;
+    }
+    public String getNameCurrentUser(){
+        for(Cookie c : servletRequest.getCookies()){
+            if(c.getName().equals(USER))
+                return c.getValue();
+        }
+        return null;
+    }
+
+
+
+
+
+
+
+    public void validate(){
+        try {
+            if (user.getEmail().length() == 0 || user.getEmail() == null) {
+                addFieldError("user.email", "Email không được để trống");
+            }
+
+            if (user.getPassword().length() == 0) {
+                addFieldError("user.password", "Password không được để trống");
+            }
+        }catch (Exception e){}
+
+    }
+
+    @Override
+    public boolean acceptableParameterName(String parameterName) {
+        return !parameterName.contains("session") && !parameterName.contains("request");
+    }
+
+    @Override
+    public void setSession(Map<String, Object> session) {
+        userSession = session;
+    }
+
+
+
 }

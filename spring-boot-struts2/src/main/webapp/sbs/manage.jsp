@@ -112,7 +112,7 @@ pageEncoding="UTF-8" %>
 
                 <h4 class="pb-0 px-2 mb-0">
                     user:
-                    <s:property value="#session['USER']" />
+                    <s:property value="nameCurrentUser" />
                 </h4>
             </div>
         </div>
@@ -648,7 +648,7 @@ pageEncoding="UTF-8" %>
                     },
                 }); //
             }
-            //api get data with page number
+            //api get list data with page number
             function getUsers(page = 0, size = 10) {
                 currentPage = page;
                 $.ajax({
@@ -677,7 +677,7 @@ pageEncoding="UTF-8" %>
                     }
                 }
             });
-
+            // edit user profile
             async function editUser(email) {
                 let user = await getUser(email);
                 $('#modalName').val(user.name);
@@ -689,11 +689,11 @@ pageEncoding="UTF-8" %>
                 $('#modalActive').prop('checked', user.active);
                 isUpdate = true;
             }
-
+            // change notify error message
             function changeNotify(element, data) {
                 element.html(data);
             }
-
+            // get user from api
             async function getUser(email) {
                 var data = await $.ajax({
                     type: 'GET',
@@ -831,29 +831,35 @@ pageEncoding="UTF-8" %>
 
             // delete User
             function deleteUser(email, isSearch = false) {
-                $.ajax({
-                    type: 'POST',
-                    url: 'deleteuser.do',
-                    data: 'email=' + email,
-                    success: function (data) {
-                        if (isSearch) getUsers();
-                        else getUsers(currentPage);
-                    },
-                });
+                var text = 'Bạn có muốn xoá thành viên có email: ' + email + ' không?';
+                if (confirm(text) == true)
+                    $.ajax({
+                        type: 'POST',
+                        url: 'deleteuser.do',
+                        data: 'email=' + email,
+                        success: function (data) {
+                            if (isSearch) getUsers();
+                            else getUsers(currentPage);
+                        },
+                    });
             }
 
             // toggle lock User
             function toggleLockUser(email, active, isSearch = false) {
+                var text = active
+                    ? 'Bạn có muốn khóa thành viên có email: ' + email + ' không?'
+                    : 'Bạn có muốn mở khóa thành viên có email: ' + email + ' không?';
                 active = !active;
-                $.ajax({
-                    type: 'POST',
-                    url: 'togglelockuser.do',
-                    data: 'email=' + email + '&active=' + active,
-                    success: function (data) {
-                        if (isSearch) getUsers();
-                        else getUsers(currentPage);
-                    },
-                });
+                if (confirm(text) == true)
+                    $.ajax({
+                        type: 'POST',
+                        url: 'togglelockuser.do',
+                        data: 'email=' + email + '&active=' + active,
+                        success: function (data) {
+                            if (isSearch) getUsers();
+                            else getUsers(currentPage);
+                        },
+                    });
             }
         </script>
     </body>

@@ -10,15 +10,23 @@
     <constant name="struts.i18n.reload" value="false" />
     <constant name="struts.configuration.xml.reload" value="false" />
     <package name="sbs" namespace="/" extends="struts-default">
-        <action name="index">
-            <result>/sbs/login.jsp</result>
-        </action>
-        <action name="login" class="com.web.sbs.controller.UserAction" method="execute">
+        <action name="index"  class="com.web.sbs.controller.UserAction" method="checkLogin">
+            <result name="login" type="redirectAction">checklogin</result>
             <result name="success" type="redirectAction">manage</result>
+        </action>
+        <action name="checklogin" class="com.web.sbs.controller.UserAction" method="execute">
+            <result name="login" type="redirectAction">login</result>
+            <result name="success" type="redirectAction">manage</result>
+        </action>
+        <action name="login" class="com.web.sbs.controller.UserAction" method="login">
+
+            <result name="success" >/sbs/login.jsp</result>
+            <result name="manager" type="redirectAction">manage</result>
             <result name="input">/sbs/login.jsp</result>
         </action>
         <action name="manage" class="com.web.sbs.controller.UserAction" method="list">
             <result name="success">/sbs/manage.jsp</result>
+            <result name="login" type="redirectAction">login</result>
         </action>
 
     </package>
