@@ -394,6 +394,7 @@ pageEncoding="UTF-8" %>
         </div>
 
         <script>
+            var pageNumberIndex = 0;
             function openTab(evt, tabName) {
                 var i, tabcontent, tablinks;
                 tabcontent = document.getElementsByClassName('tabcontent');
@@ -407,13 +408,14 @@ pageEncoding="UTF-8" %>
                 document.getElementById(tabName).style.display = 'block';
                 evt.currentTarget.className += ' active';
             }
-            function activeNumber(pageIndex) {
+            function activeNumber(pageIndex = 0) {
+                pageNumberIndex = pageIndex;
                 var pages = document.getElementsByClassName('num-page');
                 // for (var i = 0; i < pages.length; i++) {
                 //     pages[i].className = pages[i].className.replace(' is-active-page', '');
                 // }
                 console.log(pages);
-                pages[pageIndex].className += ' is-active-page';
+                pages[pageNumberIndex].className += ' is-active-page';
             }
             // window.onload(openTab())
         </script>
@@ -437,11 +439,86 @@ pageEncoding="UTF-8" %>
             crossorigin="anonymous"
         ></script>
         <script type="text/javascript">
+            var mapData = {};
+
             $('.page-link').on('click', function (e) {
                 e.preventDefault(); // Now link won't go anywhere
 
                 console.log('element was clicked');
             });
+
+            // load data search users
+            function getDataSearchUsers(data, size) {
+                var users = data.users;
+                var userData = '';
+                var pagination = '';
+                var x = 0;
+                for (var i = 0; i < users.length; i++) {
+                    console.log(users[i].isActive);
+                    userData += `
+                                        <tr>
+                                            <td>\${i + 1}</td>
+                                            <td class="nowrap">\${users[i].name ? users[i].name : ''}</td>
+                                            <td class="nowrap">\${users[i].email ? users[i].email : '' }</td>
+                                            <td class="nowrap">\${users[i].groups ? users[i].groups : ''}</td>
+                                            <td class="nowrap">\${
+                                                users[i].isActive == true
+                                                    ? '<span class="text-success">Đang hoạt động</span>'
+                                                    : '<span class="text-danger">Tạm khóa</span>'
+                                            }</td>
+
+                                            <td class="nowrap">
+
+                                              <a href="edit.do?user.email=/\${users[i].email}">
+                                              <img class="icon-green" style="width: 15px" src="../resources/pen-solid.svg"
+                                                  alt="edit" />
+                                              </a>
+                                              &nbsp;&nbsp;
+
+                                              <a href="delete.do?user.email=/\${users[i].email}">
+                                              <img class="icon-red" style="width: 15px" src="../resources/trash-can-solid.svg"
+                                                  alt="delete" />
+                                              </a>
+                                              &nbsp;&nbsp;
+
+                                              <a href="actionLock.do?user.email=/\${users[i].email}">
+                                              <img style="width: 15px" src="../resources/user-xmark-solid.svg"
+                                                  alt="lock or unlock" />
+                                              </a>
+                                          </td>
+                                        </tr>
+            `;
+                }
+                pagination += `
+                                    <li class="page-item" >
+                                        <a class="page-link" onclick="getSearchUsers(\${data.page - 1 <= 0 ? 0 : data.page - 1},\${size})" href="#" aria-label="Previous">
+                                            <span aria-hidden="true">&laquo;</span>
+                                        </a>
+                                    </li>
+                                    `;
+                for (var j = 0; j < data.totalPages; j++) {
+                    pagination += `
+                                    <li class="page-item"><a class="page-link num-page" onclick="getSearchUsers(\${j},\${size}); activeNumber( \${j})"   href="#">\${j+1}</a></li>
+
+                                    `;
+                }
+                pagination += `
+                                    <li class="page-item">
+                                        <a class="page-link" onclick="getSearchUsers(\${data.page +1 == data.totalPages ? data.page : data.page +1},\${size})"  href="#" aria-label="Next">
+                                            <span aria-hidden="true">&raquo;</span>
+                                        </a>
+                                    </li>
+                                    <li class="page-item" >
+                                        <a class="page-link" onclick="getSearchUsers(\${data.totalPages -1},\${size})"  href="#" aria-label="Next">
+                                            <span aria-hidden="true">&raquo;&raquo;</span>
+                                        </a>
+                                    </li>
+                                `;
+                $('#tbody').html(userData);
+                $('.list-pagination').html(pagination);
+            }
+
+            //load data users
             function getDataUsers(data, size) {
                 var users = data.users;
                 var userData = '';
@@ -490,7 +567,7 @@ pageEncoding="UTF-8" %>
                                         </a>
                                     </li>
                                     `;
-                for (var j = 0; j <= data.totalPages; j++) {
+                for (var j = 0; j < data.totalPages; j++) {
                     pagination += `
                                     <li class="page-item"><a class="page-link num-page" onclick="getUsers(\${j},\${size}); activeNumber( \${j})"   href="#">\${j+1}</a></li>
 
@@ -498,12 +575,12 @@ pageEncoding="UTF-8" %>
                 }
                 pagination += `
                                     <li class="page-item">
-                                        <a class="page-link" onclick="getUsers(\${data.page +1 >= data.totalPages ? data.totalPages : data.page +1},\${size})"  href="#" aria-label="Next">
+                                        <a class="page-link" onclick="getUsers(\${data.page +1 == data.totalPages ? data.page : data.page +1},\${size})"  href="#" aria-label="Next">
                                             <span aria-hidden="true">&raquo;</span>
                                         </a>
                                     </li>
                                     <li class="page-item">
-                                        <a class="page-link" onclick="getUsers(\${data.totalPages},\${size})"  href="#" aria-label="Next">
+                                        <a class="page-link" onclick="getUsers(\${data.totalPages - 1},\${size})"  href="#" aria-label="Next">
                                             <span aria-hidden="true">&raquo;&raquo;</span>
                                         </a>
                                     </li>
@@ -514,12 +591,22 @@ pageEncoding="UTF-8" %>
             // search results
             $('#btnSearch').on('click', function (e) {
                 e.preventDefault();
+                mapData = {};
                 var form = document.getElementById('searchForm');
                 var formData = new FormData(form);
-                var mapData = {};
+
                 for (var data of formData) {
                     mapData[data[0]] = data[1];
                 }
+                getSearchUsers();
+            });
+            // reset form search
+            function resetForm() {
+                $('#searchForm').trigger('reset');
+                getUsers();
+            }
+            // api search users with page number
+            function getSearchUsers(page = 0, size = 5) {
                 console.log(mapData);
                 var active = mapData.active == '0' ? false : true;
                 var query =
@@ -534,20 +621,15 @@ pageEncoding="UTF-8" %>
                 $.ajax({
                     type: 'GET',
                     url: 'searchuser.do',
-                    data: query + '&page=' + 0 + '&size=' + 5,
+                    data: query + '&page=' + page + '&size=' + size,
                     dataType: 'json',
                     success: function (data) {
                         console.log(data.users);
-                        getDataUsers(data);
+                        getDataSearchUsers(data);
                     },
                 }); //
-            });
-            // reset form search
-            function resetForm() {
-                $('#searchForm').trigger('reset');
-                getUsers();
             }
-            // get data with page number
+            //api get data with page number
             function getUsers(page = 0, size = 5) {
                 $.ajax({
                     type: 'GET',

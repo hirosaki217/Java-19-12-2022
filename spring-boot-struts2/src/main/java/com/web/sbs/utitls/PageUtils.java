@@ -6,7 +6,9 @@ public class PageUtils {
 
     public PageUtils(int page, int size, int total){
         this.totalPages = (int) Math.floor(total / size);
-
+        if(total - totalPages* size  > 0)
+            totalPages++;
+        System.out.println("TOTAL PAGE: "+ totalPages);
         this.next = page * size;
     }
 

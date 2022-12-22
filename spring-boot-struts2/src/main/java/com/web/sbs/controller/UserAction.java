@@ -95,6 +95,7 @@ public class UserAction extends ActionSupport  implements SessionAware, Paramete
     }
     public String search() throws Exception{
         User user = new User(email, name, groups, active);
+        System.out.println(user);
         try {
             userRepository.findUserByOption(user);
 

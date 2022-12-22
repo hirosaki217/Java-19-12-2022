@@ -19,18 +19,18 @@ public interface UserRepository {
     @Select("SELECT email, name, groups, active, created_at FROM users ORDER BY created_at DESC")
     public List<User> findAll();
 
-    @Select("SELECT email, name, groups, active, created_at FROM users WHERE email = #{user.email} " +
-//            "&& " +
-//            "name LIKE '%#{user.name}%' && "+
-//            "groups LIKE '%#{user.groups}%'"+
-//            "active like \'%#{user.active}\'"+
+    @Select("SELECT email, name, groups, active, created_at FROM users WHERE email like  CONCAT('%', #{user.email}, '%') " +
+            "AND " +
+            "name LIKE CONCAT('%', #{user.name}, '%')  AND "+
+            "groups LIKE CONCAT('%', #{user.groups}, '%') AND "+
+            "active = IFNULL(#{user.active}, active) "+
             " ORDER BY created_at DESC LIMIT #{size} OFFSET #{next}")
     public List<User> findUserByOptions(@Param("user") User user, @Param("next") int next,@Param("size") int size);
-    @Select("SELECT email, name, groups, active, created_at FROM users WHERE email = #{user.email}" +
-//            " && " +
-//            "name LIKE '%#{user.name}%' && "+
-//            "groups LIKE '%#{user.groups}%'"+
-//            "active like \'%#{user.active}\'"+
+    @Select("SELECT email, name, groups, active, created_at FROM users WHERE email like  CONCAT('%', #{user.email}, '%') " +
+            "AND " +
+            "name LIKE CONCAT('%', #{user.name}, '%')  AND "+
+            "groups LIKE CONCAT('%', #{user.groups}, '%') AND "+
+            "active = IFNULL(#{user.active}, active) "+
             " ORDER BY created_at DESC ")
     public List<User> findUserByOption(@Param("user") User user);
     @Results({
