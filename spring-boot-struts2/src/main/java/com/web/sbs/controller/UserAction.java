@@ -30,6 +30,17 @@ public class UserAction extends ActionSupport  implements SessionAware, Paramete
     private String name, email, groups, password;
     private boolean active;
 
+    private User user;
+
+
+    private List<User> users;
+
+    private Map<String, Object> userSession;
+    public List<User> getUsers(){
+        return users;
+    }
+
+
     public int getTotalPages() {
         return totalPages;
     }
@@ -64,30 +75,37 @@ public class UserAction extends ActionSupport  implements SessionAware, Paramete
         this.remember = remember;
     }
 
-    private User user;
 
-
-    private List<User> users;
-
-    private Map<String, Object> userSession;
-    public List<User> getUsers(){
-        return users;
-    }
 
     public String list(){
+//        if(userSession.get(USER) == null){
+//            return "login";
+//        }
             int totalRecord = userRepository.findAll().size();
             PageUtils pageUtils = new PageUtils(page, size, totalRecord);
             setTotalPages(pageUtils.getTotalPages());
             this.users = userRepository.findUsers(pageUtils.getNext(), size);
         System.out.println(users);
-        System.out.println(userSession.get(REMEMBER_TOKEN));
+        System.out.println(userSession.get(USER));
         return SUCCESS;
     }
     public String insert(){
         User user = new User(email, name, groups, active, password);
         user.setCreatedAt(new Date());
+        System.out.println("INSERT "+ user);
         try {
             userRepository.addUser(user);
+        }catch (Exception e){
+            System.out.println(e);
+        }
+        return SUCCESS;
+    }
+
+    public String update(){
+        User user = new User(email, name, groups, active, password);
+//        user.setCreatedAt(new Date());
+        try {
+            userRepository.updateUser(user);
         }catch (Exception e){
             System.out.println(e);
         }
@@ -112,32 +130,69 @@ public class UserAction extends ActionSupport  implements SessionAware, Paramete
         System.out.println(users);
 
 
-        System.out.println(userSession.get(REMEMBER_TOKEN));
+        System.out.println(userSession.get(USER));
+        return SUCCESS;
+    }
+    public String get(){
+
+        try {
+            this.user =  userRepository.getUser(email);
+            System.out.println("USER "+ user);
+        }catch (Exception e){
+            System.out.println(e);
+        }
+        return SUCCESS;
+    }
+
+    public String delete(){
+        try {
+            userRepository.deleteUser(email);
+        }catch (Exception e){
+            System.out.println(e);
+        }
+        return SUCCESS;
+    }
+
+    public String toogleLockUser(){
+        try {
+            userRepository.toogleLockUser(active, email);
+        }catch (Exception e){
+            System.out.println(e);
+        }
         return SUCCESS;
     }
 
     @Override
     public String execute() throws Exception {
-
         InetAddress IP =InetAddress.getLocalHost();
+
         if(user.getEmail().length() > 0){
+
             User userDB = userRepository.getUserByEmail(user.getEmail());
             userDB.setLastLogin(new Date());
             userDB.setIpLastLogin(IP.getHostAddress());
-            if(userDB != null){
 
-                boolean matchPassword = user.getPassword().equals( userDB.getPassword());
-                if(matchPassword){
-                    userSession.put(REMEMBER_TOKEN, user.getEmail());
-                    userRepository.updateUser(userDB);
+            try {
+                if(userDB != null){
 
-                    if(isRemember()){
+                    boolean matchPassword = user.getPassword().equals( userDB.getPassword());
+                    if(matchPassword){
+
+                        userSession.put(USER, user.getEmail());
+                        userRepository.updateUser(userDB);
+
+                        if(isRemember()){
+                            System.out.println("REMMEMBER ");
 //                        save to session
+                        }
+                        System.out.println(userDB);
+                        return SUCCESS;
+
                     }
-                    return SUCCESS;
 
                 }
-
+            }catch (Exception e){
+                System.out.println(e);
             }
 
         }
@@ -170,15 +225,14 @@ public class UserAction extends ActionSupport  implements SessionAware, Paramete
     }
 
 
-
     public void validate(){
         try {
             if (user.getEmail().length() == 0 || user.getEmail() == null) {
-                addFieldError("emailHelp", "Email không được để trống");
+                addFieldError("user.email", "Email không được để trống");
             }
 
             if (user.getPassword().length() == 0) {
-                addFieldError("passwordHelp", "Password không được để trống");
+                addFieldError("user.password", "Password không được để trống");
             }
         }catch (Exception e){}
 
@@ -186,9 +240,7 @@ public class UserAction extends ActionSupport  implements SessionAware, Paramete
 
     @Override
     public boolean acceptableParameterName(String parameterName) {
-        if(parameterName.contains("session") || parameterName.contains("request"))
-            return false;
-        return true;
+        return !parameterName.contains("session") && !parameterName.contains("request");
     }
 
     @Override

@@ -1,5 +1,5 @@
-<%@ taglib prefix="s" uri="/struts-tags" %>
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="s" uri="/struts-tags" %> <%@ page language="java" contentType="text/html; charset=UTF-8"
+pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -26,15 +26,8 @@
             #passwordHelp {
                 color: red !important;
             }
-            .errorMessage{
 
-
-            }
-            .input-group{
-
-
-            }
-            ul > li > span{
+            ul > li > span {
                 color: red;
             }
         </style>
@@ -62,7 +55,6 @@
                                 name="user.email"
                             />
                         </div>
-
                     </div>
                     <div class="form-group">
                         <div class="input-group mb-3">
@@ -79,23 +71,17 @@
                                 name="user.password"
                             />
                         </div>
-
                     </div>
                     <small class="text-danger form-text text-muted">
-                    <s:actionerror />
-                    <s:fielderror  />
-                    </small
+                        <s:actionerror />
+                        <s:fielderror />
+                    </small>
                     <div class="form-check">
-                        <s:checkbox name="remember" fieldValue="true" label="Remember"/>
-
+                        <s:checkbox name="remember" fieldValue="true" label="Remember" />
                     </div>
                     <button type="submit" class="btn btn-primary">Đăng nhập</button>
-                    <input type="hidden"
-                    	name="${_csrf.parameterName}"
-                    	value="${_csrf.token}"/>
-
+                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
                 </form>
-
             </div>
         </div>
         <script

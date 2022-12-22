@@ -49,10 +49,22 @@ public interface UserRepository {
     @Delete("DELETE FROM users WHERE email = #{email}")
     public void deleteUser(@Param("email") String email);
 
-    @Update("UPDATE users SET users.name = #{user.name}, users.groups = #{user.groups}, users.active= #{user.active}, users.password = #{user.password}, users.last_login = #{user.lastLogin}, users.ip_last_login = #{user.ipLastLogin} WHERE users.email = #{user.email}" )
+    @Update("UPDATE users SET users.name = #{user.name}, users.groups = #{user.groups}, users.active= #{user.active}, users.password = #{user.password} WHERE users.email = #{user.email}" )
     public void updateUser(@Param("user") User user);
 
-    @Insert("INSERT INTO users (email, name, password, groups, active) VALUES( #{user.email}, #{user.name}, #{user.password}, #{user.groups}, #{user.active})")
+    @Insert("INSERT INTO users (email, name, password, groups, active, created_at) VALUES( #{user.email}, #{user.name}, #{user.password}, #{user.groups}, #{user.active}, #{user.createdAt})")
     public void addUser(@Param("user") User user);
 
+    @Results({
+            @Result(property = "active", column = "active"),
+            @Result(property = "createdAt", column = "created_at"),
+            @Result(property = "email", column = "email"),
+            @Result(property = "name", column = "name"),
+            @Result(property = "groups", column = "groups"),
+    })
+    @Select("SELECT email, name, groups, active, created_at FROM users WHERE email = #{email} ")
+    public User getUser(@Param("email") String email);
+
+    @Select("UPDATE users SET active = #{active} WHERE users.email = #{email}")
+    public void toogleLockUser(@Param("active") boolean active,@Param("email") String email);
 }

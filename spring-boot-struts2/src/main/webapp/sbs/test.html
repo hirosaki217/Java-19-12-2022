@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+            integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+            crossorigin="anonymous"
+        />
+    </head>
+    <body>
+        <button
+            type="button"
+            class="btn btn-primary"
+            data-toggle="modal"
+            data-target="#exampleModal"
+            class="btn-primary btn"
+        >
+            Thêm mới
+        </button>
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog d-flex justify-content-center">
+                <form id="insertForm">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Thêm user/ Chỉnh sửa User</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group row">
+                                <label for="modalName" class="col-sm-2 col-form-label">Tên</label>
+                                <div class="col-sm-10">
+                                    <input name="name" type="text" class="form-control" id="modalName" />
+                                </div>
+                                <small class="pl-5 ml-5 text-danger" id="errorName"></small>
+                            </div>
+                            <div class="form-group row">
+                                <label for="modalEmail" class="col-sm-2 col-form-label">Email</label>
+                                <div class="col-sm-10">
+                                    <input name="email" type="email" class="form-control" id="modalEmail" />
+                                </div>
+                                <small class="pl-5 ml-5 text-danger" id="errorEmail"></small>
+                            </div>
+                            <div class="form-group row">
+                                <label for="modalPassword" class="col-sm-2 col-form-label">Mật khẩu</label>
+                                <div class="col-sm-10">
+                                    <input name="password" type="password" class="form-control" id="modalPassword" />
+                                </div>
+                                <small class="pl-5 ml-5 text-danger" id="errorPassword"></small>
+                            </div>
+                            <div class="form-group row">
+                                <label for="modalRePassword" class="col-sm-2 col-form-label">Xác nhận</label>
+                                <div class="col-sm-10">
+                                    <input
+                                        name="repassword"
+                                        type="password"
+                                        class="form-control"
+                                        id="modalRePassword"
+                                    />
+                                </div>
+                                <small class="pl-5 ml-5 text-danger" id="errorRePassword"></small>
+                            </div>
+                            <div class="form-group row">
+                                <label for="modalGroup" class="col-sm-2 col-form-label">Nhóm</label>
+                                <div class="col-sm-10">
+                                    <select name="groups" id="modalGroup" class="form-control pr-5">
+                                        <option value="">Chọn nhóm</option>
+                                        <option value="ADMIN">Admin</option>
+                                        <option value="CUSTOMER" selected>Customer</option>
+                                    </select>
+                                </div>
+                                <small id="errorGroup" class="pl-5 ml-5 text-danger" id="error"></small>
+                            </div>
+                            <div class="form-group row">
+                                <label for="" class="col-sm-2 col-form-label">Trạng thái</label>
+                                <input type="checkbox" checked name="active" />
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                            <button type="button" id="btnSave" class="btn btn-primary">Lưu</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.2/jquery.min.js"
+            integrity="sha512-tWHlutFnuG0C6nQRlpvrEhE4QpkG1nn2MOUMWmUeRePl4e3Aki0VB6W1v3oLjFtd0hVOtRQ9PHpSfN6u6/QXkQ=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"
+        ></script>
+        <!-- <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+                integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+                crossorigin="anonymous"></script> -->
+        <script
+            src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"
+        ></script>
+        <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"
+        ></script>
+        <script>
+            $('#btnSave').on('click', function (e) {
+                e.preventDefault();
+                mapData = {};
+                var isValid = true;
+                var errorName = $('#errorName');
+                var errorEmail = $('#errorEmail');
+                var errorPassword = $('#errorPassword');
+                var errorRePassword = $('#errorRePassword');
+                var errorGroup = $('#errorGroup');
+                changeNotify(errorName, '');
+                changeNotify(errorEmail, '');
+                changeNotify(errorPassword, '');
+                changeNotify(errorRePassword, '');
+                changeNotify(errorGroup, '');
+
+                var form = document.getElementById('insertForm');
+                var formData = new FormData(form);
+
+                var regexMail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+                for (var data of formData) {
+                    mapData[data[0]] = data[1];
+                }
+
+                console.log(mapData);
+                if (mapData.name.length == 0) {
+                    changeNotify(errorName, 'Tên không được để trống');
+                    isValid = false;
+                }
+
+                if (mapData.email.length == 0) {
+                    changeNotify(errorEmail, 'Email không được để trống');
+                    isValid = false;
+                } else if (!regexMail.test(mapData.email)) {
+                    changeNotify(errorEmail, 'Email không hợp lệ');
+                    isValid = false;
+                }
+
+                if (mapData.groups.length == 0) {
+                    changeNotify(errorGroup, 'Nhóm không được để trống');
+                    isValid = false;
+                }
+                if (mapData.password.length == 0) {
+                    changeNotify(errorPassword, 'Mật khẩu không được để trống');
+                    isValid = false;
+                }
+                if (mapData.repassword !== mapData.password) {
+                    changeNotify(errorRePassword, 'Mật khẩu không trùng khớp');
+                    isValid = false;
+                }
+                if (!isValid) {
+                    return;
+                }
+                $('#exampleModal').modal('hide');
+            });
+
+            function changeNotify(element, data) {
+                element.html(data);
+            }
+        </script>
+    </body>
+</html>

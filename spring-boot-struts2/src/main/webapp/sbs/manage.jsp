@@ -160,13 +160,18 @@ pageEncoding="UTF-8" %>
                             </div>
                             <div class="form-group mr-4">
                                 <label for="group">Nhóm</label>
-                                <input
+                                <!-- <input
                                     type="text"
                                     name="groups"
                                     class="form-control"
                                     id="group"
                                     placeholder="Chọn nhóm"
-                                />
+                                /> -->
+                                <select name="groups" id="group" class="form-control pr-5">
+                                    <option value="" selected>Chọn nhóm</option>
+                                    <option value="ADMIN">ADMIN</option>
+                                    <option value="CUSTOMER">CUSTOMER</option>
+                                </select>
                                 <!-- <small id="emailHelp" class="form-text text-muted"
                                 >We'll never share your email with anyone else.</small
                             > -->
@@ -174,7 +179,7 @@ pageEncoding="UTF-8" %>
                             <div class="form-group mr-4">
                                 <label for="inputState">Trạng thái</label>
                                 <select name="active" id="inputState" class="form-control pr-5">
-                                    <option selected>Chọn trạng thái</option>
+                                    <option value="" selected>Chọn trạng thái</option>
                                     <option value="0">Đóng</option>
                                     <option value="1">Mở</option>
                                 </select>
@@ -192,6 +197,7 @@ pageEncoding="UTF-8" %>
                                     data-toggle="modal"
                                     data-target="#exampleModal"
                                     class="btn-primary btn"
+                                    onclick="handleChangeAction(false);"
                                 >
                                     Thêm mới
                                 </button>
@@ -204,7 +210,7 @@ pageEncoding="UTF-8" %>
                     </div>
                 </form>
             </div>
-
+            <!-- Pagination -->
             <div class="pagination d-flex justify-content-center align-items-center">
                 <div class="d-flex align-items-center">
                     <nav aria-label="Page navigation example" class="px-3 pagination-nav">
@@ -294,6 +300,7 @@ pageEncoding="UTF-8" %>
                     </tbody>
                 </table>
             </div>
+            <!-- Pagination bottom -->
             <div class="pagination d-flex justify-content-center align-items-center">
                 <div class="d-flex align-items-center">
                     <nav aria-label="Page navigation example" class="px-3 pagination-nav">
@@ -313,6 +320,7 @@ pageEncoding="UTF-8" %>
                             </li> -->
                         </ul>
                     </nav>
+                    <p class="pagination-helper"></p>
                 </div>
             </div>
             <!-- Modal -->
@@ -338,11 +346,17 @@ pageEncoding="UTF-8" %>
                                     <div class="col-sm-10">
                                         <input name="name" type="text" class="form-control" id="modalName" />
                                     </div>
+                                    <div class="ml-5">
+                                        <small class="pl-5 ml-5 text-danger" id="errorName"></small>
+                                    </div>
                                 </div>
                                 <div class="form-group row">
                                     <label for="modalEmail" class="col-sm-2 col-form-label">Email</label>
                                     <div class="col-sm-10">
                                         <input name="email" type="email" class="form-control" id="modalEmail" />
+                                    </div>
+                                    <div class="ml-5">
+                                        <small class="pl-5 ml-5 text-danger" id="errorEmail"></small>
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -355,6 +369,9 @@ pageEncoding="UTF-8" %>
                                             id="modalPassword"
                                         />
                                     </div>
+                                    <div class="ml-5">
+                                        <small class="pl-5 ml-5 text-danger" id="errorPassword"></small>
+                                    </div>
                                 </div>
                                 <div class="form-group row">
                                     <label for="modalRePassword" class="col-sm-2 col-form-label">Xác nhận</label>
@@ -366,23 +383,29 @@ pageEncoding="UTF-8" %>
                                             id="modalRePassword"
                                         />
                                     </div>
+                                    <div class="ml-5">
+                                        <small class="pl-5 ml-5 text-danger" id="errorRePassword"></small>
+                                    </div>
                                 </div>
                                 <div class="form-group row">
                                     <label for="modalGroup" class="col-sm-2 col-form-label">Nhóm</label>
                                     <div class="col-sm-10">
                                         <select name="groups" id="modalGroup" class="form-control pr-5">
                                             <option value="">Chọn nhóm</option>
-                                            <option value="ADMIN">Admin</option>
-                                            <option value="CUSTOMER" selected>Customer</option>
+                                            <option value="ADMIN">ADMIN</option>
+                                            <option value="CUSTOMER" selected>CUSTOMER</option>
                                         </select>
+                                    </div>
+                                    <div class="ml-5">
+                                        <small id="errorGroup" class="pl-5 ml-5 text-danger" id="error"></small>
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label for="" class="col-sm-2 col-form-label">Trạng thái</label>
-                                    <input type="checkbox" checked name="active" />
+                                    <input id="modalActive" type="checkbox" checked name="active" />
                                 </div>
                             </div>
-                            <div class="modal-footer">
+                            <div class="modal-footer" id="actionFormEdit">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
                                 <button type="button" id="btnSave" class="btn btn-primary">Lưu</button>
                             </div>
@@ -395,6 +418,7 @@ pageEncoding="UTF-8" %>
 
         <script>
             var pageNumberIndex = 0;
+
             function openTab(evt, tabName) {
                 var i, tabcontent, tablinks;
                 tabcontent = document.getElementsByClassName('tabcontent');
@@ -410,14 +434,7 @@ pageEncoding="UTF-8" %>
             }
             function activeNumber(pageIndex = 0) {
                 pageNumberIndex = pageIndex;
-                var pages = document.getElementsByClassName('num-page');
-                // for (var i = 0; i < pages.length; i++) {
-                //     pages[i].className = pages[i].className.replace(' is-active-page', '');
-                // }
-                console.log(pages);
-                pages[pageNumberIndex].className += ' is-active-page';
             }
-            // window.onload(openTab())
         </script>
         <script
             src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.2/jquery.min.js"
@@ -440,7 +457,8 @@ pageEncoding="UTF-8" %>
         ></script>
         <script type="text/javascript">
             var mapData = {};
-
+            var isUpdate = false;
+            var currentPage = 0;
             $('.page-link').on('click', function (e) {
                 e.preventDefault(); // Now link won't go anywhere
 
@@ -454,7 +472,6 @@ pageEncoding="UTF-8" %>
                 var pagination = '';
                 var x = 0;
                 for (var i = 0; i < users.length; i++) {
-                    console.log(users[i].isActive);
                     userData += `
                                         <tr>
                                             <td>\${i + 1}</td>
@@ -469,19 +486,21 @@ pageEncoding="UTF-8" %>
 
                                             <td class="nowrap">
 
-                                              <a href="edit.do?user.email=/\${users[i].email}">
+                                              <a onclick="editUser(\'\${users[i].email}\')" data-toggle="modal"
+                                                    data-target="#exampleModal"
+                                                    type="button"  href="#">
                                               <img class="icon-green" style="width: 15px" src="../resources/pen-solid.svg"
                                                   alt="edit" />
                                               </a>
                                               &nbsp;&nbsp;
 
-                                              <a href="delete.do?user.email=/\${users[i].email}">
+                                              <a onclick="deleteUser(\'\${users[i].email} \', true);" href="#">
                                               <img class="icon-red" style="width: 15px" src="../resources/trash-can-solid.svg"
                                                   alt="delete" />
                                               </a>
                                               &nbsp;&nbsp;
 
-                                              <a href="actionLock.do?user.email=/\${users[i].email}">
+                                              <a onclick="toggleLockUser(\'\${users[i].email} \', \${users[i].active}, true);" href="#">
                                               <img style="width: 15px" src="../resources/user-xmark-solid.svg"
                                                   alt="lock or unlock" />
                                               </a>
@@ -498,7 +517,7 @@ pageEncoding="UTF-8" %>
                                     `;
                 for (var j = 0; j < data.totalPages; j++) {
                     pagination += `
-                                    <li class="page-item"><a class="page-link num-page" onclick="getSearchUsers(\${j},\${size}); activeNumber( \${j})"   href="#">\${j+1}</a></li>
+                                    <li class="page-item"><a class="page-link num-page \${j == pageNumberIndex ? 'is-active-page': ''}" onclick="getSearchUsers(\${j},\${size}); activeNumber( \${j})"   href="#">\${j+1}</a></li>
 
                                     `;
                 }
@@ -525,7 +544,6 @@ pageEncoding="UTF-8" %>
                 var pagination = '';
                 var x = 0;
                 for (var i = 0; i < users.length; i++) {
-                    console.log(users[i].isActive);
                     userData += `
                                         <tr>
                                             <td>\${i + 1}</td>
@@ -540,19 +558,21 @@ pageEncoding="UTF-8" %>
 
                                             <td class="nowrap">
 
-                                              <a href="edit.do?user.email=/\${users[i].email}">
+                                                <a onclick="editUser(\'\${users[i].email}\')" data-toggle="modal"
+                                                    data-target="#exampleModal"
+                                                    type="button"  href="#">
                                               <img class="icon-green" style="width: 15px" src="../resources/pen-solid.svg"
                                                   alt="edit" />
                                               </a>
                                               &nbsp;&nbsp;
 
-                                              <a href="delete.do?user.email=/\${users[i].email}">
+                                              <a onclick="deleteUser(\'\${users[i].email} \');" href="#">
                                               <img class="icon-red" style="width: 15px" src="../resources/trash-can-solid.svg"
                                                   alt="delete" />
                                               </a>
                                               &nbsp;&nbsp;
 
-                                              <a href="actionLock.do?user.email=/\${users[i].email}">
+                                              <a onclick="toggleLockUser(\'\${users[i].email} \', \${users[i].active});" href="#">
                                               <img style="width: 15px" src="../resources/user-xmark-solid.svg"
                                                   alt="lock or unlock" />
                                               </a>
@@ -569,7 +589,7 @@ pageEncoding="UTF-8" %>
                                     `;
                 for (var j = 0; j < data.totalPages; j++) {
                     pagination += `
-                                    <li class="page-item"><a class="page-link num-page" onclick="getUsers(\${j},\${size}); activeNumber( \${j})"   href="#">\${j+1}</a></li>
+                                    <li class="page-item"><a class="page-link num-page \${j == pageNumberIndex ? 'is-active-page': ''}" onclick="getUsers(\${j},\${size}); activeNumber( \${j})"   href="#">\${j+1}</a></li>
 
                                     `;
                 }
@@ -606,8 +626,8 @@ pageEncoding="UTF-8" %>
                 getUsers();
             }
             // api search users with page number
-            function getSearchUsers(page = 0, size = 5) {
-                console.log(mapData);
+            function getSearchUsers(page = 0, size = 10) {
+                currentPage = page;
                 var active = mapData.active == '0' ? false : true;
                 var query =
                     'name=' +
@@ -624,13 +644,13 @@ pageEncoding="UTF-8" %>
                     data: query + '&page=' + page + '&size=' + size,
                     dataType: 'json',
                     success: function (data) {
-                        console.log(data.users);
                         getDataSearchUsers(data);
                     },
                 }); //
             }
             //api get data with page number
-            function getUsers(page = 0, size = 5) {
+            function getUsers(page = 0, size = 10) {
+                currentPage = page;
                 $.ajax({
                     type: 'GET',
                     url: 'listuser.do',
@@ -642,36 +662,199 @@ pageEncoding="UTF-8" %>
             }
 
             // insert users
-            $('#btnSave').on('click', function (e) {
+
+            $('#btnSave').on('click', async function (e) {
                 e.preventDefault();
+                if (!isUpdate) {
+                    if (await saveOrUpdate(false)) {
+                        $('#insertForm').trigger('reset');
+                        $('#exampleModal').modal('hide');
+                    }
+                } else if (isUpdate) {
+                    if (await saveOrUpdate(true)) {
+                        $('#insertForm').trigger('reset');
+                        $('#exampleModal').modal('hide');
+                    }
+                }
+            });
+
+            async function editUser(email) {
+                let user = await getUser(email);
+                $('#modalName').val(user.name);
+                $('#modalEmail').val(user.email);
+                // $('#modalEmail').attr('disabled', true);
+                $('#modalEmail').attr('readonly', true);
+                // $('#modalPassword').val(user.password);
+                $('#modalGroup').val(user.group).change();
+                $('#modalActive').prop('checked', user.active);
+                isUpdate = true;
+            }
+
+            function changeNotify(element, data) {
+                element.html(data);
+            }
+
+            async function getUser(email) {
+                var data = await $.ajax({
+                    type: 'GET',
+                    url: 'getuser.do',
+                    data: 'email=' + email,
+                    success: function (data) {
+                        console.log(data.user);
+                    },
+                });
+                return data.user;
+            }
+            // save or update user functionality
+            async function saveOrUpdate(isUpdate) {
+                mapData = {};
+                var isValid = true;
+                var errorName = $('#errorName');
+                var errorEmail = $('#errorEmail');
+                var errorPassword = $('#errorPassword');
+                var errorRePassword = $('#errorRePassword');
+                var errorGroup = $('#errorGroup');
+                changeNotify(errorName, '');
+                changeNotify(errorEmail, '');
+                changeNotify(errorPassword, '');
+                changeNotify(errorRePassword, '');
+                changeNotify(errorGroup, '');
+
                 var form = document.getElementById('insertForm');
                 var formData = new FormData(form);
-                var mapData = {};
+
+                var regexMail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+                var regexPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{6,}$/;
                 for (var data of formData) {
                     mapData[data[0]] = data[1];
                 }
                 mapData.active = mapData.active == 'on' ? true : false;
-                var query =
-                    'name=' +
-                    mapData.name +
-                    '&email=' +
-                    mapData.email +
-                    '&groups=' +
-                    mapData.groups +
-                    '&password=' +
-                    mapData.password +
-                    '&active=' +
-                    mapData.active;
+                let user;
+                if (!isUpdate) {
+                    user = await getUser(mapData.email);
+                }
+                console.log(mapData);
+                if (mapData.name.length == 0) {
+                    changeNotify(errorName, 'Vui lòng nhập tên người sử dụng');
+                    isValid = false;
+                } else if (mapData.name.length < 6) {
+                    changeNotify(errorName, 'Tên phải lớn hơn 5 ký tự');
+                    isValid = false;
+                }
+
+                if (mapData.email.length == 0) {
+                    changeNotify(errorEmail, 'Email không được để trống');
+                    isValid = false;
+                } else if (!regexMail.test(mapData.email)) {
+                    changeNotify(errorEmail, 'Email không đúng định dạng');
+                    isValid = false;
+                } else if (user && !isUpdate) {
+                    changeNotify(errorEmail, 'Email đã được đăng ký');
+                    isValid = false;
+                }
+
+                if (mapData.groups.length == 0) {
+                    changeNotify(errorGroup, 'Nhóm không được để trống');
+                    isValid = false;
+                }
+                if (mapData.password.length == 0) {
+                    changeNotify(errorPassword, 'Mật khẩu không được để trống');
+                    isValid = false;
+                } else if (mapData.password.length < 6) {
+                    changeNotify(errorPassword, 'Mật khẩu phải hơn 5 ký tự');
+                    isValid = false;
+                } else if (!regexPassword.test(mapData.password)) {
+                    changeNotify(errorPassword, 'Mật khẩu không bảo mật');
+                    isValid = false;
+                }
+
+                if (mapData.repassword !== mapData.password) {
+                    changeNotify(errorRePassword, 'Mật khẩu và xác nhận mật khẩu không chính xác');
+                    isValid = false;
+                }
+
+                if (!isValid) {
+                    return false;
+                }
+                if (!isUpdate) {
+                    var query =
+                        'name=' +
+                        mapData.name +
+                        '&email=' +
+                        mapData.email +
+                        '&groups=' +
+                        mapData.groups +
+                        '&password=' +
+                        mapData.password +
+                        '&active=' +
+                        mapData.active;
+                    console.log(query);
+                    $.ajax({
+                        type: 'POST',
+                        url: 'insertuser.do',
+                        data: query,
+                        success: function (data) {
+                            getUsers();
+                        },
+                    });
+                }
+                if (isUpdate) {
+                    var query =
+                        'name=' +
+                        mapData.name +
+                        '&email=' +
+                        mapData.email +
+                        '&groups=' +
+                        mapData.groups +
+                        '&password=' +
+                        mapData.password +
+                        '&active=' +
+                        mapData.active;
+                    console.log(query);
+                    $.ajax({
+                        type: 'POST',
+                        url: 'updateuser.do',
+                        data: query,
+                        success: function (data) {
+                            getUsers(currentPage);
+                        },
+                    });
+                }
+                return true;
+            }
+            // change action update or insert
+            function handleChangeAction(isUpdate) {
+                this.isUpdate = isUpdate;
+                // $('#modalEmail').attr('disabled', false);
+                $('#modalEmail').attr('readonly', false);
+            }
+
+            // delete User
+            function deleteUser(email, isSearch = false) {
                 $.ajax({
                     type: 'POST',
-                    url: 'insertuser.do',
-                    data: query,
+                    url: 'deleteuser.do',
+                    data: 'email=' + email,
                     success: function (data) {
-                        getUsers(0, 5);
+                        if (isSearch) getUsers();
+                        else getUsers(currentPage);
                     },
                 });
-                console.log(mapData);
-            });
+            }
+
+            // toggle lock User
+            function toggleLockUser(email, active, isSearch = false) {
+                active = !active;
+                $.ajax({
+                    type: 'POST',
+                    url: 'togglelockuser.do',
+                    data: 'email=' + email + '&active=' + active,
+                    success: function (data) {
+                        if (isSearch) getUsers();
+                        else getUsers(currentPage);
+                    },
+                });
+            }
         </script>
     </body>
 </html>
