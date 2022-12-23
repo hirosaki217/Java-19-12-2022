@@ -233,7 +233,8 @@ pageEncoding="UTF-8" %>
                     <!-- </ul>
                     </nav> -->
                     <p class="pagination-helper">
-                        <!-- Hiển thị từ 1 ~ <s:property value="users.size" /> trong tổng số 100 user -->
+                        Hiển thị từ 1 ~ <s:property value="users.size" /> trong tổng số
+                        <s:property value="totalRecord" /> user
                     </p>
                 </div>
             </div>
@@ -548,7 +549,8 @@ pageEncoding="UTF-8" %>
                                     </li>
                                 `;
                 $('#tbody').html(userData);
-                $('.list-pagination').html(pagination);
+                if (data.totalPages <= 1) $('.list-pagination').html('');
+                else $('.list-pagination').html(pagination);
             }
 
             //load data users
@@ -620,7 +622,8 @@ pageEncoding="UTF-8" %>
                                     </li>
                                 `;
                 $('#tbody').html(userData);
-                $('.list-pagination').html(pagination);
+                if (data.totalPages <= 1) $('.list-pagination').html('');
+                else $('.list-pagination').html(pagination);
             }
             // search results
             $('#btnSearch').on('click', function (e) {

@@ -9,6 +9,7 @@ import com.web.sbs.utitls.StringUtils;
 import org.apache.struts2.interceptor.ServletRequestAware;
 import org.apache.struts2.interceptor.ServletResponseAware;
 import org.apache.struts2.interceptor.SessionAware;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -27,15 +28,17 @@ import java.util.regex.Pattern;
 public class UserAction extends ActionSupport  implements SessionAware, ParameterNameAware, ServletResponseAware, ServletRequestAware {
     @Autowired
     UserRepository userRepository;
+
+
     public static final String REMEMBER_TOKEN ="remember_token";
     public static final String USER ="USER";
     private boolean remember;
 
     private int page;
-    private int size = 5;
+    private int size = 10;
 
     private int totalPages = 0;
-
+    private int totalRecord;
     private String name, email, groups, password;
     private boolean active;
 
@@ -74,7 +77,11 @@ public class UserAction extends ActionSupport  implements SessionAware, Paramete
         this.size = size;
     }
 
+    public int getTotalRecord() {
 
+
+        return totalRecord;
+    }
 
     public boolean isRemember() {
         return remember;
@@ -164,7 +171,7 @@ public class UserAction extends ActionSupport  implements SessionAware, Paramete
         if(getRememberToken() == null && userSession.get(REMEMBER_TOKEN) == null)
             return "login";
 
-        int totalRecord = userRepository.findAll().size();
+        totalRecord = userRepository.findAll().size();
         PageUtils pageUtils = new PageUtils(page, size, totalRecord);
         setTotalPages(pageUtils.getTotalPages());
         this.users = userRepository.findUsers(pageUtils.getNext(), size);
@@ -208,7 +215,8 @@ public class UserAction extends ActionSupport  implements SessionAware, Paramete
         }catch (Exception e){
             System.out.println(e);
         }
-        int totalRecord = userRepository.findUserByOption(user).size();
+        totalRecord = userRepository.findUserByOption(user).size();
+
 
         PageUtils pageUtils = new PageUtils(page, size, totalRecord);
         setTotalPages(pageUtils.getTotalPages());
@@ -352,7 +360,8 @@ public class UserAction extends ActionSupport  implements SessionAware, Paramete
 
         try {
             User userDB = userRepository.getUserByEmail(user.getEmail());
-//            boolean matchPassword = user.getPassword().equals( userDB.getPassword());
+
+
             Pattern pattern = Pattern.compile("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$", Pattern.CASE_INSENSITIVE);
             Matcher matcher = pattern.matcher(user.getEmail());
             if (user.getEmail().length() == 0 || user.getEmail() == null) {
@@ -367,12 +376,19 @@ public class UserAction extends ActionSupport  implements SessionAware, Paramete
             if (user.getPassword().length() == 0) {
                 addFieldError("b", "Password không được để trống");
 
+            }else{
+
+                if(userDB == null ){
+                    addFieldError("c", "Tài khoản hoặc mật khẩu không chính xác");
+                }else{
+                    boolean matchPassword = user.getPassword().equals( userDB.getPassword());
+                    if(!matchPassword)
+                        addFieldError("c", "Tài khoản hoặc mật khẩu không chính xác");
+                }
             }
 
 
-            if(userDB == null){
-                addFieldError("c", "Tài khoản hoặc mật khẩu không chính xác");
-            }
+
 
 
 
