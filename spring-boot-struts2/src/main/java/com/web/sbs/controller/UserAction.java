@@ -20,6 +20,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Component
 public class UserAction extends ActionSupport  implements SessionAware, ParameterNameAware, ServletResponseAware, ServletRequestAware {
@@ -131,6 +133,8 @@ public class UserAction extends ActionSupport  implements SessionAware, Paramete
         return userRepository.findAll();
     }
 
+
+
     public User getUser(){
         return user;
     }
@@ -157,8 +161,9 @@ public class UserAction extends ActionSupport  implements SessionAware, Paramete
 
 // list user
     public String list(){
-        if(getRememberToken() == null)
+        if(getRememberToken() == null && userSession.get(REMEMBER_TOKEN) == null)
             return "login";
+
         int totalRecord = userRepository.findAll().size();
         PageUtils pageUtils = new PageUtils(page, size, totalRecord);
         setTotalPages(pageUtils.getTotalPages());
@@ -255,33 +260,39 @@ public class UserAction extends ActionSupport  implements SessionAware, Paramete
     public String login() throws Exception{
         InetAddress IP =InetAddress.getLocalHost();
         String token = UUID.randomUUID().toString();
+//        check if exists token cookie  or session on browser
         if(user==null){
-            if(getRememberToken()== null)
+            if(getRememberToken()== null && userSession.get(REMEMBER_TOKEN) == null)
                 return SUCCESS;
             return "manager";
         }
+
+// check on form
+
         if(user.getEmail().length() > 0){
             User userDB = userRepository.getUserByEmail(user.getEmail());
-            userDB.setLastLogin(new Date());
-            userDB.setIpLastLogin(IP.getHostAddress());
-            userDB.setRememberToken(token);
+
             try {
                 if(userDB != null){
-                    System.out.println("USER "+user.getPassword() + userDB.getPassword());
+                    userDB.setLastLogin(new Date());
+                    userDB.setIpLastLogin(IP.getHostAddress());
+                    userDB.setRememberToken(token);
 
                     boolean matchPassword = user.getPassword().equals( userDB.getPassword());
                     if(matchPassword){
                         userRepository.updateLastLogin(userDB);
+                        userSession.put(REMEMBER_TOKEN, token);
+                        userSession.put(USER, userDB.getName());
                         if(isRemember()){
-                            System.out.println("REMMEMBER ");
 //                        save to session
+                            System.out.println(userDB);
+                            Cookie cookie = new Cookie(REMEMBER_TOKEN, token);
+                            String name = StringUtils.removeAccent(userDB.getName()).replace(" ", "_");
+                            Cookie cookieName = new Cookie(USER, name);
+                            servletResponse.addCookie(cookie);
+                            servletResponse.addCookie(cookieName);
                         }
-                        System.out.println(userDB);
-                        Cookie cookie = new Cookie(REMEMBER_TOKEN, token);
-                        String name = StringUtils.removeAccent(userDB.getName()).replace(" ", "_");
-                        Cookie cookieName = new Cookie(USER, name);
-                        servletResponse.addCookie(cookie);
-                        servletResponse.addCookie(cookieName);
+
                         return "manager";
 
                     }
@@ -299,6 +310,7 @@ public class UserAction extends ActionSupport  implements SessionAware, Paramete
 //  load page manage
     @Override
     public String execute() throws Exception {
+        System.out.println("execute");
         InetAddress IP =InetAddress.getLocalHost();
         String token = UUID.randomUUID().toString();
         String tokenRequest = getRememberToken();
@@ -307,7 +319,6 @@ public class UserAction extends ActionSupport  implements SessionAware, Paramete
         if(tokenRequest != null){
 
             User userDB = userRepository.findUserByToken(tokenRequest);
-            System.out.println("SESSION "+userDB);
             if(userDB != null){
                 return SUCCESS;
             }
@@ -316,10 +327,11 @@ public class UserAction extends ActionSupport  implements SessionAware, Paramete
     }
 
     public String getRememberToken(){
-        for(Cookie c : servletRequest.getCookies()){
-            if(c.getName().equals(REMEMBER_TOKEN))
-                return c.getValue();
-        }
+        if(servletRequest.getCookies() != null)
+            for(Cookie c : servletRequest.getCookies()){
+                if(c.getName().equals(REMEMBER_TOKEN))
+                    return c.getValue();
+            }
         return null;
     }
     public String getNameCurrentUser(){
@@ -337,15 +349,35 @@ public class UserAction extends ActionSupport  implements SessionAware, Paramete
 
 
     public void validate(){
+
         try {
+            User userDB = userRepository.getUserByEmail(user.getEmail());
+//            boolean matchPassword = user.getPassword().equals( userDB.getPassword());
+            Pattern pattern = Pattern.compile("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$", Pattern.CASE_INSENSITIVE);
+            Matcher matcher = pattern.matcher(user.getEmail());
             if (user.getEmail().length() == 0 || user.getEmail() == null) {
-                addFieldError("user.email", "Email không được để trống");
+                addFieldError("a", "Email không được để trống");
+            }else{
+
+                if(!matcher.find()){
+                    addFieldError("d", "Email không đúng định dạng");
+                }
             }
 
             if (user.getPassword().length() == 0) {
-                addFieldError("user.password", "Password không được để trống");
+                addFieldError("b", "Password không được để trống");
+
             }
-        }catch (Exception e){}
+
+
+            if(userDB == null){
+                addFieldError("c", "Tài khoản hoặc mật khẩu không chính xác");
+            }
+
+
+
+        }catch (Exception e){
+        }
 
     }
 

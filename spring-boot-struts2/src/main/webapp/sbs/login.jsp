@@ -77,7 +77,7 @@ pageEncoding="UTF-8"%>
                         <s:fielderror />
                     </small>
                     <div class="form-check">
-                        <s:checkbox name="remember" fieldValue="true" label="Remember" />
+                        <s:checkbox name="remember" label="Remember" />
                     </div>
                     <button type="submit" class="btn btn-primary">Đăng nhập</button>
                     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />

@@ -112,7 +112,9 @@ pageEncoding="UTF-8" %>
 
                 <h4 class="pb-0 px-2 mb-0">
                     user:
-                    <s:property value="nameCurrentUser" />
+                    <s:if test="%{nameCurrentUser != null}"> <s:property value="nameCurrentUser" /> </s:if>
+                    <s:elseif test="%{#session.USER != null}"> <s:property value="#session.USER" /> </s:elseif>
+                    <s:else> </s:else>
                 </h4>
             </div>
         </div>
@@ -213,9 +215,9 @@ pageEncoding="UTF-8" %>
             <!-- Pagination -->
             <div class="pagination d-flex justify-content-center align-items-center">
                 <div class="d-flex align-items-center">
-                    <nav aria-label="Page navigation example" class="px-3 pagination-nav">
-                        <ul class="pagination list-pagination">
-                            <!-- <li class="page-item">
+                    <!--<nav aria-label="Page navigation example" class="px-3 pagination-nav">
+                        <ul class="pagination list-pagination">-->
+                    <!-- <li class="page-item">
                                 <a class="page-link" href="#" aria-label="Previous">
                                     <span aria-hidden="true">&laquo;</span>
                                 </a>
@@ -228,9 +230,11 @@ pageEncoding="UTF-8" %>
                                     <span aria-hidden="true">&raquo;</span>
                                 </a>
                             </li> -->
-                        </ul>
-                    </nav>
-                    <p class="pagination-helper">Hiển thị từ 1 ~ 10 trong tổng số 100 user</p>
+                    <!-- </ul>
+                    </nav> -->
+                    <p class="pagination-helper">
+                        <!-- Hiển thị từ 1 ~ <s:property value="users.size" /> trong tổng số 100 user -->
+                    </p>
                 </div>
             </div>
 
@@ -342,7 +346,9 @@ pageEncoding="UTF-8" %>
                             </div>
                             <div class="modal-body">
                                 <div class="form-group row">
-                                    <label for="modalName" class="col-sm-2 col-form-label">Tên</label>
+                                    <label for="modalName" class="col-sm-2 col-form-label"
+                                        >Tên <small class="text-danger">*</small>
+                                    </label>
                                     <div class="col-sm-10">
                                         <input name="name" type="text" class="form-control" id="modalName" />
                                     </div>
@@ -351,7 +357,9 @@ pageEncoding="UTF-8" %>
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="modalEmail" class="col-sm-2 col-form-label">Email</label>
+                                    <label for="modalEmail" class="col-sm-2 col-form-label"
+                                        >Email <small class="text-danger">*</small></label
+                                    >
                                     <div class="col-sm-10">
                                         <input name="email" type="email" class="form-control" id="modalEmail" />
                                     </div>
@@ -360,7 +368,9 @@ pageEncoding="UTF-8" %>
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="modalPassword" class="col-sm-2 col-form-label">Mật khẩu</label>
+                                    <label for="modalPassword" class="col-sm-2 col-form-label"
+                                        >Mật khẩu <small class="text-danger">*</small></label
+                                    >
                                     <div class="col-sm-10">
                                         <input
                                             name="password"
@@ -374,7 +384,9 @@ pageEncoding="UTF-8" %>
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="modalRePassword" class="col-sm-2 col-form-label">Xác nhận</label>
+                                    <label for="modalRePassword" class="col-sm-2 col-form-label"
+                                        >Xác nhận <small class="text-danger">*</small></label
+                                    >
                                     <div class="col-sm-10">
                                         <input
                                             name="repassword"
@@ -388,7 +400,9 @@ pageEncoding="UTF-8" %>
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="modalGroup" class="col-sm-2 col-form-label">Nhóm</label>
+                                    <label for="modalGroup" class="col-sm-2 col-form-label"
+                                        >Nhóm <small class="text-danger">*</small></label
+                                    >
                                     <div class="col-sm-10">
                                         <select name="groups" id="modalGroup" class="form-control pr-5">
                                             <option value="">Chọn nhóm</option>
@@ -510,7 +524,7 @@ pageEncoding="UTF-8" %>
                 }
                 pagination += `
                                     <li class="page-item" >
-                                        <a class="page-link" onclick="getSearchUsers(\${data.page - 1 <= 0 ? 0 : data.page - 1},\${size})" href="#" aria-label="Previous">
+                                        <a class="page-link" onclick="getSearchUsers(\${data.page - 1 <= 0 ? 0 : data.page - 1},\${size}); activeNumber( \${data.page - 1 <= 0 ? 0 : data.page - 1},\${size});" href="#" aria-label="Previous">
                                             <span aria-hidden="true">&laquo;</span>
                                         </a>
                                     </li>
@@ -523,12 +537,12 @@ pageEncoding="UTF-8" %>
                 }
                 pagination += `
                                     <li class="page-item">
-                                        <a class="page-link" onclick="getSearchUsers(\${data.page +1 == data.totalPages ? data.page : data.page +1},\${size})"  href="#" aria-label="Next">
+                                        <a class="page-link" onclick="getSearchUsers(\${data.page +1 == data.totalPages ? data.page : data.page +1},\${size}); activeNumber( \${data.page +1 == data.totalPages ? data.page : data.page +1});"  href="#" aria-label="Next">
                                             <span aria-hidden="true">&raquo;</span>
                                         </a>
                                     </li>
                                     <li class="page-item" >
-                                        <a class="page-link" onclick="getSearchUsers(\${data.totalPages -1},\${size})"  href="#" aria-label="Next">
+                                        <a class="page-link" onclick="getSearchUsers(\${data.totalPages -1},\${size});activeNumber( \${data.totalPages -1});"  href="#" aria-label="Next">
                                             <span aria-hidden="true">&raquo;&raquo;</span>
                                         </a>
                                     </li>
@@ -582,7 +596,7 @@ pageEncoding="UTF-8" %>
                 }
                 pagination += `
                                     <li class="page-item">
-                                        <a class="page-link" onclick="getUsers(\${data.page - 1 <= 0 ? 0 : data.page - 1},\${size})" href="#" aria-label="Previous">
+                                        <a class="page-link" onclick="getUsers(\${data.page - 1 <= 0 ? 0 : data.page - 1},\${size}); activeNumber( \${data.page - 1 <= 0 ? 0 : data.page - 1},\${size});" href="#" aria-label="Previous">
                                             <span aria-hidden="true">&laquo;</span>
                                         </a>
                                     </li>
@@ -595,12 +609,12 @@ pageEncoding="UTF-8" %>
                 }
                 pagination += `
                                     <li class="page-item">
-                                        <a class="page-link" onclick="getUsers(\${data.page +1 == data.totalPages ? data.page : data.page +1},\${size})"  href="#" aria-label="Next">
+                                        <a class="page-link" onclick="getUsers(\${data.page +1 == data.totalPages ? data.page : data.page +1},\${size}) ; activeNumber( \${data.page +1 == data.totalPages ? data.page : data.page +1});"  href="#" aria-label="Next">
                                             <span aria-hidden="true">&raquo;</span>
                                         </a>
                                     </li>
                                     <li class="page-item">
-                                        <a class="page-link" onclick="getUsers(\${data.totalPages - 1},\${size})"  href="#" aria-label="Next">
+                                        <a class="page-link" onclick="getUsers(\${data.totalPages - 1},\${size}); activeNumber( \${data.totalPages -1});"  href="#" aria-label="Next">
                                             <span aria-hidden="true">&raquo;&raquo;</span>
                                         </a>
                                     </li>
