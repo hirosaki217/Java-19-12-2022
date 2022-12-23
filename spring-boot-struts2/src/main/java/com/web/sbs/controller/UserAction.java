@@ -9,7 +9,6 @@ import com.web.sbs.utitls.StringUtils;
 import org.apache.struts2.interceptor.ServletRequestAware;
 import org.apache.struts2.interceptor.ServletResponseAware;
 import org.apache.struts2.interceptor.SessionAware;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -174,7 +173,7 @@ public class UserAction extends ActionSupport  implements SessionAware, Paramete
         totalRecord = userRepository.findAll().size();
         PageUtils pageUtils = new PageUtils(page, size, totalRecord);
         setTotalPages(pageUtils.getTotalPages());
-        this.users = userRepository.findUsers(pageUtils.getNext(), size);
+        this.users = userRepository.findAllWithPagin(pageUtils.getNext(), size);
         System.out.println(users);
         System.out.println(userSession.get(USER));
         return SUCCESS;
@@ -220,7 +219,7 @@ public class UserAction extends ActionSupport  implements SessionAware, Paramete
 
         PageUtils pageUtils = new PageUtils(page, size, totalRecord);
         setTotalPages(pageUtils.getTotalPages());
-        this.users = userRepository.findUserByOptions(user, pageUtils.getNext(), size);
+        this.users = userRepository.findUserByOptionHasPagin(user, pageUtils.getNext(), size);
 
 
 

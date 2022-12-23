@@ -639,12 +639,14 @@ pageEncoding="UTF-8" %>
             });
             // reset form search
             function resetForm() {
+                pageNumberIndex = 0;
                 $('#searchForm').trigger('reset');
                 getUsers();
             }
             // api search users with page number
             function getSearchUsers(page = 0, size = 10) {
                 currentPage = page;
+
                 var active = mapData.active == '0' ? false : true;
                 var query =
                     'name=' +

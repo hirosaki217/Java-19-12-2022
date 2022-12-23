@@ -3,7 +3,6 @@ package com.web.sbs.repository;
 
 import com.web.sbs.model.User;
 import org.apache.ibatis.annotations.*;
-import org.apache.ibatis.type.JdbcType;
 
 import java.util.List;
 
@@ -28,7 +27,7 @@ public interface UserRepository {
             "active = IFNULL(#{user.active}, active) AND "+
             "is_delete = 0 "+
             " ORDER BY created_at DESC LIMIT #{size} OFFSET #{next}")
-    public List<User> findUserByOptions(@Param("user") User user, @Param("next") int next,@Param("size") int size);
+    public List<User> findUserByOptionHasPagin(@Param("user") User user, @Param("next") int next, @Param("size") int size);
 
 //    find all search user
     @Select("SELECT email, name, groups, active, created_at FROM users WHERE email like  CONCAT('%', #{user.email}, '%') " +
@@ -49,7 +48,7 @@ public interface UserRepository {
             @Result(property = "isDelete", column = "is_delete"),
     })
     @Select("SELECT email, name, groups, active, created_at, is_delete FROM users WHERE is_delete = 0 ORDER BY created_at DESC LIMIT #{size} OFFSET #{next}")
-    public List<User> findUsers(@Param("next") int next,@Param("size") int size);
+    public List<User> findAllWithPagin(@Param("next") int next, @Param("size") int size);
 //    get user by email
     @Select("SELECT email, password, name FROM users WHERE email = #{email}")
     public User getUserByEmail(@Param("email") String email);
