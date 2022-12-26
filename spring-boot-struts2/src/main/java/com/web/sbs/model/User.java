@@ -14,7 +14,7 @@ public class User {
     private Date createdAt = new Date();
 
 
-    private String groups;
+    private String groupRole;
     private boolean isDelete =false;
 
     private boolean active;
@@ -77,7 +77,7 @@ public class User {
     public User(String email, String name, String groups, boolean active, String password) {
         this.email = email;
         this.name = name;
-        this.groups = groups;
+        this.groupRole = groups;
         this.active = active;
         this.password = password;
     }
@@ -93,7 +93,7 @@ public class User {
     public User(String email, String name, String groups, boolean active) {
         this.email = email;
         this.name = name;
-        this.groups = groups;
+        this.groupRole = groups;
         this.active = active;
     }
 
@@ -126,12 +126,12 @@ public class User {
         this.name = name;
     }
 
-    public String getGroups() {
-        return groups;
+    public String getGroupRole() {
+        return groupRole;
     }
 
-    public void setGroups(String groups) {
-        this.groups = groups;
+    public void setGroupRole(String groups) {
+        this.groupRole = groups;
     }
 
     public String getRememberToken() {
@@ -155,7 +155,7 @@ public class User {
         return "User{" +
                 "email='" + email + '\'' +
                 ", name='" + name + '\'' +
-                ", groups='" + groups + '\'' +
+                ", groups='" + groupRole + '\'' +
                 ", createdAt='" + createdAt + '\'' +
                 ", isActive=" + active +
                 ", is_delete=" + isDelete +

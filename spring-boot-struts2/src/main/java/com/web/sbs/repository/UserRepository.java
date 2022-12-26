@@ -14,26 +14,40 @@ public interface UserRepository {
             @Result(property = "createdAt", column = "created_at"),
             @Result(property = "email", column = "email"),
             @Result(property = "name", column = "name"),
-            @Result(property = "groups", column = "groups"),
+            @Result(property = "groupRole", column = "group_role"),
             @Result(property = "isDelete", column = "is_delete"),
     })
-    @Select("SELECT email, name, groups, active, created_at, is_delete FROM users WHERE is_delete = 0 ORDER BY created_at DESC")
+    @Select("SELECT email, name, group_role, active, created_at, is_delete FROM users WHERE is_delete = 0 ORDER BY created_at DESC")
     public List<User> findAll();
 // find user has pagination
-    @Select("SELECT email, name, groups, active, created_at FROM users WHERE email like  CONCAT('%', #{user.email}, '%') " +
+    @Results({
+            @Result(property = "active", column = "active"),
+            @Result(property = "createdAt", column = "created_at"),
+            @Result(property = "email", column = "email"),
+            @Result(property = "name", column = "name"),
+            @Result(property = "groupRole", column = "group_role"),
+    })
+    @Select("SELECT email, name, group_role, active, created_at FROM users WHERE email like  CONCAT('%', #{user.email}, '%') " +
             "AND " +
             "name LIKE CONCAT('%', #{user.name}, '%')  AND "+
-            "groups LIKE CONCAT('%', #{user.groups}, '%') AND "+
+            "group_role LIKE CONCAT('%', #{user.groupRole}, '%') AND "+
             "active = IFNULL(#{user.active}, active) AND "+
             "is_delete = 0 "+
             " ORDER BY created_at DESC LIMIT #{size} OFFSET #{next}")
     public List<User> findUserByOptionHasPagin(@Param("user") User user, @Param("next") int next, @Param("size") int size);
 
 //    find all search user
-    @Select("SELECT email, name, groups, active, created_at FROM users WHERE email like  CONCAT('%', #{user.email}, '%') " +
+    @Results({
+            @Result(property = "active", column = "active"),
+            @Result(property = "createdAt", column = "created_at"),
+            @Result(property = "email", column = "email"),
+            @Result(property = "name", column = "name"),
+            @Result(property = "groupRole", column = "group_role"),
+    })
+    @Select("SELECT email, name, group_role, active, created_at FROM users WHERE email like  CONCAT('%', #{user.email}, '%') " +
             "AND " +
             "name LIKE CONCAT('%', #{user.name}, '%')  AND "+
-            "groups LIKE CONCAT('%', #{user.groups}, '%') AND "+
+            "group_role LIKE CONCAT('%', #{user.groupRole}, '%') AND "+
             "active = IFNULL(#{user.active}, active) AND"+
             " is_delete = 0 "+
             " ORDER BY created_at DESC ")
@@ -44,10 +58,10 @@ public interface UserRepository {
             @Result(property = "createdAt", column = "created_at"),
             @Result(property = "email", column = "email"),
             @Result(property = "name", column = "name"),
-            @Result(property = "groups", column = "groups"),
+            @Result(property = "groupRole", column = "group_role"),
             @Result(property = "isDelete", column = "is_delete"),
     })
-    @Select("SELECT email, name, groups, active, created_at, is_delete FROM users WHERE is_delete = 0 ORDER BY created_at DESC LIMIT #{size} OFFSET #{next}")
+    @Select("SELECT email, name, group_role, active, created_at, is_delete FROM users WHERE is_delete = 0 ORDER BY created_at DESC LIMIT #{size} OFFSET #{next}")
     public List<User> findAllWithPagin(@Param("next") int next, @Param("size") int size);
 //    get user by email
     @Select("SELECT email, password, name FROM users WHERE email = #{email}")
@@ -59,13 +73,13 @@ public interface UserRepository {
     public void deleteUser(@Param("email") String email);
 
 //    update user
-    @Update("UPDATE users SET users.name = #{user.name}, users.groups = #{user.groups}, users.active= #{user.active}, users.password = #{user.password}, users.ip_last_login = #{user.ipLastLogin}, users.last_login = #{user.lastLogin} WHERE users.email = #{user.email}" )
+    @Update("UPDATE users SET users.name = #{user.name}, users.group_role = #{user.groupRole}, users.active= #{user.active}, users.password = #{user.password}, users.ip_last_login = #{user.ipLastLogin}, users.last_login = #{user.lastLogin} WHERE users.email = #{user.email}" )
     public void updateUser(@Param("user") User user);
     @Update("UPDATE users SET  users.ip_last_login = #{user.ipLastLogin}, users.last_login = #{user.lastLogin}, users.remember_token = #{user.rememberToken} WHERE users.email = #{user.email}" )
     public void updateLastLogin(@Param("user") User user);
 
 //    insert user
-    @Insert("INSERT INTO users (email, name, password, groups, active, created_at, is_delete) VALUES( #{user.email}, #{user.name}, #{user.password}, #{user.groups}, #{user.active}, #{user.createdAt}, #{user.isDelete})")
+    @Insert("INSERT INTO users (email, name, password, group_role, active, created_at, is_delete) VALUES( #{user.email}, #{user.name}, #{user.password}, #{user.groupRole}, #{user.active}, #{user.createdAt}, #{user.isDelete})")
     public void addUser(@Param("user") User user);
 
 //    get user by email
@@ -74,9 +88,9 @@ public interface UserRepository {
             @Result(property = "createdAt", column = "created_at"),
             @Result(property = "email", column = "email"),
             @Result(property = "name", column = "name"),
-            @Result(property = "groups", column = "groups"),
+            @Result(property = "groupRole", column = "group_role"),
     })
-    @Select("SELECT email, name, groups, active, created_at FROM users WHERE email = #{email} ")
+    @Select("SELECT email, name, group_role, active, created_at FROM users WHERE email = #{email} ")
     public User getUser(@Param("email") String email);
 
 //    lock unlock user
@@ -88,10 +102,10 @@ public interface UserRepository {
 
             @Result(property = "email", column = "email"),
             @Result(property = "name", column = "name"),
-            @Result(property = "groups", column = "groups"),
+            @Result(property = "groupRole", column = "group_role"),
             @Result(property = "password", column = "password"),
             @Result(property = "rememberToken", column = "remember_token"),
     })
-    @Select("SELECT users.email, users.password ,users.name , users.remember_token, users.groups FROM users WHERE users.remember_token = #{rememberToken} AND users.is_delete = 0")
+    @Select("SELECT users.email, users.password ,users.name , users.remember_token, users.group_role FROM users WHERE users.remember_token = #{rememberToken} AND users.is_delete = 0")
     public User findUserByToken(@Param("rememberToken") String rememberToken);
 }

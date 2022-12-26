@@ -207,7 +207,7 @@ public class UserAction extends ActionSupport  implements SessionAware, Paramete
 //    search
     public String search() throws Exception{
         User user = new User(email, name, groups, active);
-        System.out.println(user);
+        System.out.println("SEARCH INPUT: "+ user);
         try {
             userRepository.findUserByOption(user);
 
@@ -223,7 +223,7 @@ public class UserAction extends ActionSupport  implements SessionAware, Paramete
 
 
 
-        System.out.println(userSession.get(USER));
+        System.out.println(users);
         return SUCCESS;
     }
 

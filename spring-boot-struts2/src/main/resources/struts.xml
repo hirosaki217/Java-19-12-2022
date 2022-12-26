@@ -9,7 +9,7 @@
     <constant name="struts.objectFactory" value="spring"/>
     <constant name="struts.i18n.reload" value="false" />
     <constant name="struts.configuration.xml.reload" value="false" />
-    <package name="sbs" namespace="/" extends="struts-default">
+    <package name="user" namespace="/" extends="struts-default">
         <action name="index"  class="com.web.sbs.controller.UserAction" method="checkLogin">
             <result name="login" type="redirectAction">checklogin</result>
             <result name="success" type="redirectAction">manage</result>
@@ -30,7 +30,7 @@
         </action>
 
     </package>
-    <package name="default" extends="json-default">
+    <package name="userapi" extends="json-default">
         <action name="listuser" class="com.web.sbs.controller.UserAction" method="list">
             <result name="success" type="json"></result>
         </action>
