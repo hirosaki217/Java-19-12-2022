@@ -492,7 +492,7 @@ pageEncoding="UTF-8" %>
                                             <td>\${i + 1}</td>
                                             <td class="nowrap">\${users[i].name ? users[i].name : ''}</td>
                                             <td class="nowrap">\${users[i].email ? users[i].email : '' }</td>
-                                            <td class="nowrap">\${users[i].groups ? users[i].groups : ''}</td>
+                                            <td class="nowrap">\${users[i].groupRole ? users[i].groupRole : ''}</td>
                                             <td class="nowrap">\${
                                                 users[i].isActive == true
                                                     ? '<span class="text-success">Đang hoạt động</span>'
@@ -565,7 +565,7 @@ pageEncoding="UTF-8" %>
                                             <td>\${i + 1}</td>
                                             <td class="nowrap">\${users[i].name ? users[i].name : ''}</td>
                                             <td class="nowrap">\${users[i].email ? users[i].email : '' }</td>
-                                            <td class="nowrap">\${users[i].groups ? users[i].groups : ''}</td>
+                                            <td class="nowrap">\${users[i].groupRole ? users[i].groupRole : ''}</td>
                                             <td class="nowrap">\${
                                                 users[i].isActive == true
                                                     ? '<span class="text-success">Đang hoạt động</span>'
