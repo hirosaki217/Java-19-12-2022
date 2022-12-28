@@ -73,8 +73,11 @@ public interface UserRepository {
     public void deleteUser(@Param("email") String email);
 
 //    update user
-    @Update("UPDATE users SET users.name = #{user.name}, users.group_role = #{user.groupRole}, users.active= #{user.active}, users.password = #{user.password}, users.ip_last_login = #{user.ipLastLogin}, users.last_login = #{user.lastLogin} WHERE users.email = #{user.email}" )
+    @Update("UPDATE users SET users.name = #{user.name}, users.group_role = #{user.groupRole}, users.active= #{user.active}, users.password = #{user.password} WHERE users.email = #{user.email}" )
     public void updateUser(@Param("user") User user);
+
+    @Update("UPDATE users SET users.name = #{user.name}, users.group_role = #{user.groupRole}, users.active= #{user.active}, users.ip_last_login = #{user.ipLastLogin}, users.last_login = #{user.lastLogin} WHERE users.email = #{user.email}" )
+    public void updateUserWithoutPassword(@Param("user") User user);
     @Update("UPDATE users SET  users.ip_last_login = #{user.ipLastLogin}, users.last_login = #{user.lastLogin}, users.remember_token = #{user.rememberToken} WHERE users.email = #{user.email}" )
     public void updateLastLogin(@Param("user") User user);
 

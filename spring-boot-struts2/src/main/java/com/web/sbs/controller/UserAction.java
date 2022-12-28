@@ -10,6 +10,8 @@ import org.apache.struts2.interceptor.ServletRequestAware;
 import org.apache.struts2.interceptor.ServletResponseAware;
 import org.apache.struts2.interceptor.SessionAware;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.Cookie;
@@ -28,6 +30,11 @@ public class UserAction extends ActionSupport  implements SessionAware, Paramete
     @Autowired
     UserRepository userRepository;
 
+    public static BCryptPasswordEncoder  passwordEncoder = new BCryptPasswordEncoder();
+
+
+
+    public static final int tokenExpiredTime  = 120;
 
     public static final String REMEMBER_TOKEN ="remember_token";
     public static final String USER ="USER";
@@ -165,6 +172,20 @@ public class UserAction extends ActionSupport  implements SessionAware, Paramete
     }
 
 
+//  logout
+
+    public String logout(){
+        if(servletRequest.getCookies() != null)
+            if (servletRequest.getCookies() != null)
+            for(Cookie c : servletRequest.getCookies()){
+                        c.setValue("");
+                        c.setPath("/");
+                        c.setMaxAge(0);
+                        servletResponse.addCookie(c);
+            }
+        return  SUCCESS;
+    }
+
 // list user
     public String list(){
         if(getRememberToken() == null && userSession.get(REMEMBER_TOKEN) == null)
@@ -176,12 +197,15 @@ public class UserAction extends ActionSupport  implements SessionAware, Paramete
         this.users = userRepository.findAllWithPagin(pageUtils.getNext(), size);
         System.out.println(users);
         System.out.println(userSession.get(USER));
+//        System.out.println("TOKEN TIME EXPIRED: " +getTokenExpiredTime());
         return SUCCESS;
     }
 
 //    insert user
     public String insert(){
-        User user = new User(email, name, groups, active, password);
+        if(getRememberToken() == null && userSession.get(REMEMBER_TOKEN) == null)
+            return "login";
+        User user = new User(email, name, groups, active, passwordEncoder.encode(password));
         user.setCreatedAt(new Date());
         user.setDelete(false);
         System.out.println("INSERT "+ user);
@@ -195,10 +219,12 @@ public class UserAction extends ActionSupport  implements SessionAware, Paramete
 
 //    update user
     public String update(){
-        User user = new User(email, name, groups, active, password);
+        if(getRememberToken() == null && userSession.get(REMEMBER_TOKEN) == null)
+            return "login";
+        User user = new User(email, name, groups, active);
 //        user.setCreatedAt(new Date());
         try {
-            userRepository.updateUser(user);
+            userRepository.updateUserWithoutPassword(user);
         }catch (Exception e){
             System.out.println(e);
         }
@@ -206,6 +232,8 @@ public class UserAction extends ActionSupport  implements SessionAware, Paramete
     }
 //    search
     public String search() throws Exception{
+        if(getRememberToken() == null && userSession.get(REMEMBER_TOKEN) == null)
+            return "login";
         User user = new User(email, name, groups, active);
         System.out.println("SEARCH INPUT: "+ user);
         try {
@@ -240,7 +268,11 @@ public class UserAction extends ActionSupport  implements SessionAware, Paramete
     }
 // delete usser
     public String delete(){
+        if(getRememberToken() == null && userSession.get(REMEMBER_TOKEN) == null)
+            return "login";
         try {
+            User user = new User(email, name, groups, active);
+            System.out.println("SEARCH INPUT DELETE: "+ user);
             userRepository.deleteUser(email);
         }catch (Exception e){
             System.out.println(e);
@@ -267,11 +299,19 @@ public class UserAction extends ActionSupport  implements SessionAware, Paramete
     public String login() throws Exception{
         InetAddress IP =InetAddress.getLocalHost();
         String token = UUID.randomUUID().toString();
+
 //        check if exists token cookie  or session on browser
         if(user==null){
-            if(getRememberToken()== null && userSession.get(REMEMBER_TOKEN) == null)
-                return SUCCESS;
-            return "manager";
+            if( userSession.get(REMEMBER_TOKEN) != null)
+                return "manager";
+            if(getRememberToken()!= null)
+                return "manager";
+
+//            if(getTokenExpiredTime() !=-1){
+//
+//                return "manager";
+//            }
+            return SUCCESS;
         }
 
 // check on form
@@ -285,7 +325,7 @@ public class UserAction extends ActionSupport  implements SessionAware, Paramete
                     userDB.setIpLastLogin(IP.getHostAddress());
                     userDB.setRememberToken(token);
 
-                    boolean matchPassword = user.getPassword().equals( userDB.getPassword());
+                    boolean matchPassword = passwordEncoder.matches(user.getPassword(), userDB.getPassword());
                     if(matchPassword){
                         userRepository.updateLastLogin(userDB);
                         userSession.put(REMEMBER_TOKEN, token);
@@ -294,8 +334,11 @@ public class UserAction extends ActionSupport  implements SessionAware, Paramete
 //                        save to session
                             System.out.println(userDB);
                             Cookie cookie = new Cookie(REMEMBER_TOKEN, token);
+
+                            cookie.setMaxAge(tokenExpiredTime);
                             String name = StringUtils.removeAccent(userDB.getName()).replace(" ", "_");
                             Cookie cookieName = new Cookie(USER, name);
+                            cookieName.setMaxAge(tokenExpiredTime);
                             servletResponse.addCookie(cookie);
                             servletResponse.addCookie(cookieName);
                         }
@@ -341,6 +384,18 @@ public class UserAction extends ActionSupport  implements SessionAware, Paramete
             }
         return null;
     }
+
+    public int getTokenExpiredTime(){
+        if(servletRequest.getCookies() != null)
+            for(Cookie c : servletRequest.getCookies()){
+                if(c.getName().equals(REMEMBER_TOKEN)){
+
+                    return c.getMaxAge();
+                }
+
+            }
+        return -1;
+    }
     public String getNameCurrentUser(){
         for(Cookie c : servletRequest.getCookies()){
             if(c.getName().equals(USER))
@@ -380,7 +435,7 @@ public class UserAction extends ActionSupport  implements SessionAware, Paramete
                 if(userDB == null ){
                     addFieldError("c", "Tài khoản hoặc mật khẩu không chính xác");
                 }else{
-                    boolean matchPassword = user.getPassword().equals( userDB.getPassword());
+                    boolean matchPassword = passwordEncoder.matches(user.getPassword(), userDB.getPassword());
                     if(!matchPassword)
                         addFieldError("c", "Tài khoản hoặc mật khẩu không chính xác");
                 }

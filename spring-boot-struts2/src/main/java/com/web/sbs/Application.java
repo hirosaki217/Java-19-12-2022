@@ -1,5 +1,6 @@
 package com.web.sbs;
 
+import com.google.gson.Gson;
 import com.web.sbs.model.User;
 import com.web.sbs.repository.UserRepository;
 import org.apache.ibatis.type.MappedTypes;
@@ -9,6 +10,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletComponentScan;
+import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
 @ServletComponentScan
@@ -26,5 +28,10 @@ public class Application implements CommandLineRunner {
     public void run(String...args) throws Exception {
 //        userRepository.addUser(new User("hiros13@gmail.com", "hieu", "ADMIN",true , "12345"));
         System.out.println(userRepository.findAll().size());
+    }
+
+    @Bean
+    public Gson getGson(){
+        return new Gson();
     }
 }

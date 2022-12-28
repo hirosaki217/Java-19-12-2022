@@ -24,8 +24,14 @@
             <result name="manager" type="redirectAction">manage</result>
             <result name="input">/sbs/login.jsp</result>
         </action>
+
+        <action name="logout" class="com.web.sbs.controller.UserAction" method="logout">
+
+            <result name="success" >/sbs/login.jsp</result>
+
+        </action>
         <action name="manage" class="com.web.sbs.controller.UserAction" method="list">
-            <result name="success">/sbs/manage.jsp</result>
+            <result name="success">/sbs/manage2.jsp</result>
             <result name="login" type="redirectAction">login</result>
         </action>
 
@@ -33,12 +39,18 @@
     <package name="userapi" extends="json-default">
         <action name="listuser" class="com.web.sbs.controller.UserAction" method="list">
             <result name="success" type="json"></result>
+            <result name="login" type="json"></result>
+
         </action>
         <action name="searchuser" class="com.web.sbs.controller.UserAction" method="search">
             <result name="success" type="json"></result>
+            <result name="login" type="json"></result>
+
         </action>
         <action name="insertuser" class="com.web.sbs.controller.UserAction" method="insert">
             <result name="success" type="json"></result>
+            <result name="login" type="json"></result>
+
         </action>
 
         <action name="getuser" class="com.web.sbs.controller.UserAction" method="get">
@@ -46,13 +58,29 @@
         </action>
         <action name="updateuser" class="com.web.sbs.controller.UserAction" method="update">
             <result name="success" type="json"></result>
+            <result name="login" type="json"></result>
+
         </action>
         <action name="deleteuser" class="com.web.sbs.controller.UserAction" method="delete">
             <result name="success" type="json"></result>
+            <result name="login" type="json"></result>
+
         </action>
         <action name="togglelockuser" class="com.web.sbs.controller.UserAction" method="toogleLockUser">
             <result name="success" type="json"></result>
+            <result name="login" type="json"></result>
+
         </action>
     </package>
-
+    <package name="productapi" extends="json-default">
+        <action name="listproduct" class="com.web.sbs.controller.ProductAction" method="list">
+            <result name="success" type="json"></result>
+        </action>
+        <action name="insertproduct" class="com.web.sbs.controller.ProductAction" method="insert">
+            <result name="success" type="json"></result>
+        </action>
+        <action name="findproduct" class="com.web.sbs.controller.ProductAction" method="search">
+            <result name="success" type="json"></result>
+        </action>
+    </package>
 </struts>
