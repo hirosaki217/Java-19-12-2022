@@ -18,6 +18,8 @@ import java.util.regex.Pattern;
 public class ProductAction extends ActionSupport {
     private File file;
     private List<Product> products;
+
+    private Product product;
     private int totalPages = 0;
     private int totalRecord = 0;
     private int size = 10;
@@ -25,7 +27,7 @@ public class ProductAction extends ActionSupport {
     private String productId;
     private String productName;
     private String productImage;
-    private double productPrice;
+    private int productPrice;
     private boolean isSales;
     private String strIsSales;
     private String description;
@@ -33,29 +35,64 @@ public class ProductAction extends ActionSupport {
     private String fileFileName;
     private double priceFrom;
     private double priceTo;
+
     @Autowired
     private Gson gson;
     @Autowired
     private ProductRepository productRepository;
     private String jsonData;
-    public String search(){
-        if(strIsSales.length() > 0 ){
-            if(strIsSales.equals("true"))
-                isSales = true;
-            else if(strIsSales.equals("false"))
-                isSales = false;
-            else if(strIsSales.equals(""))
-                isSales = false;
+
+
+    public String delete(){
+        try {
+            if(productId != null)
+                productRepository.deleteProduct(productId);
+        }catch (Exception e){
+            e.printStackTrace();
         }
 
+        return SUCCESS;
+    }
+    public String update(){
+
+        try {
+
+
+
+            isSales = Boolean.parseBoolean(strIsSales);
+            Product product = new Product(productId, productName,productPrice , isSales, description);
+            product.setUpdatedAt(new Date());
+
+
+
+            if(file != null){
+                FileInputStream fileInputStream = new FileInputStream(file);
+                String[] temp2 = fileFileName.split("\\.");
+                String fileName = file.getName() +"."+ temp2[temp2.length -1];
+                product.setProductImage(ROOT_DIR + fileName);
+                fileInputStream.transferTo(new FileOutputStream(ROOT_DIR + fileName));
+            }
+            productRepository.updateProduct(product);
+
+            System.out.println(SUCCESS);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return  SUCCESS;
+    }
+
+
+    public String search(){
         try {
             Product product = new Product(productName, isSales);
 
-            totalRecord = productRepository.findProducts(product, (int) priceFrom, (int) priceTo).size();
+
+            System.out.println("is sales"+ strIsSales);
+            totalRecord = productRepository.findProducts(product, strIsSales , (int) priceFrom, (int) priceTo).size();
             System.out.println("TOTAL: "+totalRecord);
             PageUtils pageUtils = new PageUtils(page, size, totalRecord);
             totalPages = pageUtils.getTotalPages();
-            products = productRepository.findProductsByPagin(product, (int) priceFrom, (int) priceTo, pageUtils.getNext(), size);
+            products = productRepository.findProductsByPagin(product, strIsSales, (int) priceFrom, (int) priceTo, pageUtils.getNext(), size);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -75,18 +112,23 @@ public class ProductAction extends ActionSupport {
             String firstChar = productName.substring(0,1).toUpperCase();
             String nameLatest = productRepository.findIdByFirstCharId(firstChar);
 
-            FileInputStream fileInputStream = new FileInputStream(file);
-            String[] temp2 = fileFileName.split("\\.");
 
-            String fileName = file.getName() +"."+ temp2[temp2.length -1];
             isSales = Boolean.valueOf(strIsSales);
-            Product product = new Product(generateId(firstChar, nameLatest), productName, productPrice, isSales, description);
+            Product product = new Product(generateId(firstChar, nameLatest), productName,productPrice , isSales, description);
             product.setCreatedAt(new Date());
-            product.setProductImage(ROOT_DIR + fileName);
 
+
+
+            if(file != null){
+                FileInputStream fileInputStream = new FileInputStream(file);
+                String[] temp2 = fileFileName.split("\\.");
+                String fileName = file.getName() +"."+ temp2[temp2.length -1];
+                product.setProductImage(ROOT_DIR + fileName);
+                fileInputStream.transferTo(new FileOutputStream(ROOT_DIR + fileName));
+            }
             productRepository.insertProduct(product);
-            fileInputStream.transferTo(new FileOutputStream(ROOT_DIR + fileName));
 
+            System.out.println(SUCCESS);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -94,7 +136,13 @@ public class ProductAction extends ActionSupport {
         return SUCCESS;
 
     }
+    public String get(){
+        if(productId != null)
+            product = productRepository.findProductById(productId);
 
+
+        return SUCCESS;
+    }
     public String generateId(String id, String nameLatest){
 
         String pId = id+"000000001";
@@ -109,7 +157,6 @@ public class ProductAction extends ActionSupport {
 
             return id + zero + num;
         }catch (Exception e){
-            e.printStackTrace();
         }
         return pId;
     }
@@ -124,6 +171,14 @@ public class ProductAction extends ActionSupport {
     @Override
     public String execute() throws Exception {
         return super.execute();
+    }
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
     }
 
     public File getFile() {
@@ -215,11 +270,11 @@ public class ProductAction extends ActionSupport {
         this.productImage = productImage;
     }
 
-    public double getProductPrice() {
+    public int getProductPrice() {
         return productPrice;
     }
 
-    public void setProductPrice(double productPrice) {
+    public void setProductPrice(int productPrice) {
         this.productPrice = productPrice;
     }
 

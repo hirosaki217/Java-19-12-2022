@@ -34,7 +34,7 @@ public class UserAction extends ActionSupport  implements SessionAware, Paramete
 
 
 
-    public static final int tokenExpiredTime  = 120;
+    public static final int tokenExpiredTime  = 3600;
 
     public static final String REMEMBER_TOKEN ="remember_token";
     public static final String USER ="USER";

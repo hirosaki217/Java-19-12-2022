@@ -145,10 +145,7 @@ pageEncoding="UTF-8" %>
                             </li> -->
                     <!-- </ul>
                     </nav> -->
-                    <p class="pagination-helper">
-                        Hiển thị từ 1 ~
-                        <s:property value="products.size" /> trong tổng số <s:property value="" /> products
-                    </p>
+                    <p class="pagination-helper-product" id="inforProductList"></p>
                 </div>
             </div>
 
@@ -203,6 +200,7 @@ pageEncoding="UTF-8" %>
                                 </button>
                             </div>
                             <div class="modal-body p-2 modal-product-form d-flex">
+                                <input type="text" id="modalProductId" name="productId" hidden />
                                 <div class="modal-body-left">
                                     <div class="form-group row">
                                         <label for="modalProductName" class="col-sm-2 col-form-label"
@@ -270,7 +268,7 @@ pageEncoding="UTF-8" %>
                                         </div>
                                     </div>
                                 </div>
-                                <div
+                                <!-- <div
                                     class="modal-body-right d-flex align-items-center justify-content-between flex-column pl-1"
                                 >
                                     <span class="">Hình ảnh</span>
@@ -281,6 +279,7 @@ pageEncoding="UTF-8" %>
                                             src="../resources/default_image.png"
                                             alt="image file"
                                             id="productImageEle"
+                                            name="avatar"
                                         />
                                     </div>
                                     <div
@@ -304,7 +303,7 @@ pageEncoding="UTF-8" %>
                                             aria-describedby="inputGroup-sizing-sm"
                                         />
                                     </div>
-                                </div>
+                                </div> -->
                             </div>
                             <div class="modal-footer" id="actionFormEdit">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
@@ -626,6 +625,7 @@ pageEncoding="UTF-8" %>
 
         <script>
             var pageNumberIndex = 0;
+            var pageProductNumberIndex = 0;
 
             function openTab(evt, tabName) {
                 var i, tabcontent, tablinks;
@@ -642,6 +642,9 @@ pageEncoding="UTF-8" %>
             }
             function activeNumber(pageIndex = 0) {
                 pageNumberIndex = pageIndex;
+            }
+            function activeProductNumber(pageIndex = 0) {
+                pageProductNumberIndex = pageIndex;
             }
         </script>
         <script
@@ -667,6 +670,7 @@ pageEncoding="UTF-8" %>
             var mapData = {};
             var mapDataSearch = {};
             var isSearching = false;
+            var isSearchingProduct = false;
             var isUpdate = false;
             var isUpdateProduct = false;
             var currentPage = 0;
@@ -689,7 +693,7 @@ pageEncoding="UTF-8" %>
                 var pagination = '';
                 var x = 0;
                 $('#inforUserList').html(
-                    `Hiển thị từ \${users.length == 0 ? 0 : data.page*10 +1} ~ \${users.length + data.page*10} trong tổng số \${data.totalRecord}`,
+                    `Hiển thị từ \${users.length == 0 ? 0 : data.page*10 +1} ~ \${users.length + data.page*10} trong tổng số \${data.totalRecord} users`,
                 );
                 for (var i = 0; i < users.length; i++) {
                     userData += `
@@ -764,7 +768,7 @@ pageEncoding="UTF-8" %>
                 var userData = '';
                 var pagination = '';
                 $('#inforUserList').html(
-                    `Hiển thị từ \${data.page*10 +1} ~ \${users.length + data.page*10} trong tổng số \${data.totalRecord}`,
+                    `Hiển thị từ \${data.page*10 +1} ~ \${users.length + data.page*10} trong tổng số \${data.totalRecord} users`,
                 );
                 var x = 0;
                 for (var i = 0; i < users.length; i++) {
@@ -1087,6 +1091,7 @@ pageEncoding="UTF-8" %>
 
             // change action update or insert product
             function handleChangeActionProduct(isUpdate) {
+                $('#searchProductForm').trigger('reset');
                 this.isUpdateProduct = isUpdate;
                 // $('#modalEmail').attr('disabled', false);
                 // $('#modalEmail').attr('readonly', false);

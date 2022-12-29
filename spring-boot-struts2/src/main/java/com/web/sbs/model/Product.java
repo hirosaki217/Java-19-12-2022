@@ -16,7 +16,7 @@ public class Product {
 
     private String productImage;
     @Column(columnDefinition = "DECIMAL default 0", nullable = false)
-    private double productPrice;
+    private int productPrice;
     @Column(columnDefinition = "TINYINT default 1",  nullable = false)
     private boolean isSales;
     @Column(columnDefinition = "TEXT")
@@ -51,11 +51,11 @@ public class Product {
         this.productImage = productImage;
     }
 
-    public double getProductPrice() {
+    public int getProductPrice() {
         return productPrice;
     }
 
-    public void setProductPrice(double productPrice) {
+    public void setProductPrice(int productPrice) {
         this.productPrice = productPrice;
     }
 
@@ -94,7 +94,7 @@ public class Product {
     public Product() {
     }
 
-    public Product(String productId, String productName, String productImage, double productPrice, boolean isSales, String description) {
+    public Product(String productId, String productName, String productImage, int productPrice, boolean isSales, String description) {
         this.productId = productId;
         this.productName = productName;
         this.productImage = productImage;
@@ -108,7 +108,7 @@ public class Product {
         this.isSales = isSales;
     }
 
-    public Product(String productId, String productName, double productPrice, boolean isSales, String description) {
+    public Product(String productId, String productName, int productPrice, boolean isSales, String description) {
         this.productId = productId;
         this.productName = productName;
         this.productPrice = productPrice;
