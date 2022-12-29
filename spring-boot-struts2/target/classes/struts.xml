@@ -82,5 +82,14 @@
         <action name="findproduct" class="com.web.sbs.controller.ProductAction" method="search">
             <result name="success" type="json"></result>
         </action>
+        <action name="findproductbyid" class="com.web.sbs.controller.ProductAction" method="get">
+            <result name="success" type="json"></result>
+        </action>
+        <action name="updateproduct" class="com.web.sbs.controller.ProductAction" method="update">
+            <result name="success" type="json"></result>
+        </action>
+        <action name="deleteproduct" class="com.web.sbs.controller.ProductAction" method="delete">
+            <result name="success" type="json"></result>
+        </action>
     </package>
 </struts>

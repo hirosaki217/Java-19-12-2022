@@ -900,6 +900,7 @@ pageEncoding="UTF-8" %>
 
             $('#btnSave').on('click', async function (e) {
                 e.preventDefault();
+                $('#searchForm').trigger('reset');
                 if (!isUpdate) {
                     if (await saveOrUpdate(false)) {
                         $('#insertForm').trigger('reset');

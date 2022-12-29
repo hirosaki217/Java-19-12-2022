@@ -2,23 +2,32 @@ package com.web.sbs.controller;
 
 import com.google.gson.Gson;
 import com.opensymphony.xwork2.ActionSupport;
+import com.opensymphony.xwork2.interceptor.ParameterNameAware;
 import com.web.sbs.model.Product;
 import com.web.sbs.repository.ProductRepository;
 import com.web.sbs.utitls.PageUtils;
+import org.apache.struts2.interceptor.ServletRequestAware;
+import org.apache.struts2.interceptor.ServletResponseAware;
+import org.apache.struts2.interceptor.SessionAware;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
-public class ProductAction extends ActionSupport {
+public class ProductAction extends ActionSupport implements SessionAware, ParameterNameAware, ServletResponseAware, ServletRequestAware {
+    public static final String REMEMBER_TOKEN ="remember_token";
     private File file;
     private List<Product> products;
-
+    private Map<String, Object> userSession;
     private Product product;
     private int totalPages = 0;
     private int totalRecord = 0;
@@ -44,6 +53,8 @@ public class ProductAction extends ActionSupport {
 
 
     public String delete(){
+        if(getRememberToken() == null && userSession.get(REMEMBER_TOKEN) == null)
+            return "login";
         try {
             if(productId != null)
                 productRepository.deleteProduct(productId);
@@ -54,7 +65,8 @@ public class ProductAction extends ActionSupport {
         return SUCCESS;
     }
     public String update(){
-
+        if(getRememberToken() == null && userSession.get(REMEMBER_TOKEN) == null)
+            return "login";
         try {
 
 
@@ -83,6 +95,8 @@ public class ProductAction extends ActionSupport {
 
 
     public String search(){
+        if(getRememberToken() == null && userSession.get(REMEMBER_TOKEN) == null)
+            return "login";
         try {
             Product product = new Product(productName, isSales);
 
@@ -100,6 +114,8 @@ public class ProductAction extends ActionSupport {
         return SUCCESS;
     }
     public String list(){
+        if(getRememberToken() == null && userSession.get(REMEMBER_TOKEN) == null)
+            return "login";
         totalRecord = productRepository.findAll().size();
         PageUtils pageUtils = new PageUtils(page, size, totalRecord);
         totalPages = pageUtils.getTotalPages();
@@ -107,7 +123,8 @@ public class ProductAction extends ActionSupport {
         return SUCCESS;
     }
     public String insert(){
-
+        if(getRememberToken() == null && userSession.get(REMEMBER_TOKEN) == null)
+            return "login";
         try {
             String firstChar = productName.substring(0,1).toUpperCase();
             String nameLatest = productRepository.findIdByFirstCharId(firstChar);
@@ -137,6 +154,8 @@ public class ProductAction extends ActionSupport {
 
     }
     public String get(){
+        if(getRememberToken() == null && userSession.get(REMEMBER_TOKEN) == null)
+            return "login";
         if(productId != null)
             product = productRepository.findProductById(productId);
 
@@ -340,4 +359,35 @@ public class ProductAction extends ActionSupport {
         System.out.println("NUMBER: " + num);
         return  num;
     }
+
+    @Override
+    public boolean acceptableParameterName(String parameterName) {
+        return !parameterName.contains("session") && !parameterName.contains("request");
+    }
+
+    @Override
+    public void setSession(Map<String, Object> session) {
+        userSession = session;
+    }
+
+    protected HttpServletResponse servletResponse;
+    @Override
+    public void setServletResponse(HttpServletResponse servletResponse) {
+        this.servletResponse = servletResponse;
+    }
+
+    protected HttpServletRequest servletRequest;
+    @Override
+    public void setServletRequest(HttpServletRequest servletRequest) {
+        this.servletRequest = servletRequest;
+    }
+    public String getRememberToken(){
+        if(servletRequest.getCookies() != null)
+            for(Cookie c : servletRequest.getCookies()){
+                if(c.getName().equals(REMEMBER_TOKEN))
+                    return c.getValue();
+            }
+        return null;
+    }
+
 }
