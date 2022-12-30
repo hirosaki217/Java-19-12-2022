@@ -35,7 +35,21 @@ public interface UserRepository {
             "is_delete = 0 "+
             " ORDER BY created_at DESC LIMIT #{size} OFFSET #{next}")
     public List<User> findUserByOptionHasPagin(@Param("user") User user, @Param("next") int next, @Param("size") int size);
-
+    @Results({
+            @Result(property = "active", column = "active"),
+            @Result(property = "createdAt", column = "created_at"),
+            @Result(property = "email", column = "email"),
+            @Result(property = "name", column = "name"),
+            @Result(property = "groupRole", column = "group_role"),
+    })
+    @Select("SELECT email, name, group_role, active, created_at FROM users WHERE email like  CONCAT('%', #{user.email}, '%') " +
+            "AND " +
+            "name LIKE CONCAT('%', #{user.name}, '%')  AND "+
+            "group_role LIKE CONCAT('%', #{user.groupRole}, '%') AND "+
+            "active LIKE CONCAT('%', #{active}, '%') AND "+
+            "is_delete = 0 "+
+            " ORDER BY created_at DESC LIMIT #{size} OFFSET #{next}")
+    public List<User> findUserByOptionHasPagin2(@Param("user") User user,@Param("active") String active, @Param("next") int next, @Param("size") int size);
 //    find all search user
     @Results({
             @Result(property = "active", column = "active"),
@@ -52,6 +66,22 @@ public interface UserRepository {
             " is_delete = 0 "+
             " ORDER BY created_at DESC ")
     public List<User> findUserByOption(@Param("user") User user);
+
+    @Results({
+            @Result(property = "active", column = "active"),
+            @Result(property = "createdAt", column = "created_at"),
+            @Result(property = "email", column = "email"),
+            @Result(property = "name", column = "name"),
+            @Result(property = "groupRole", column = "group_role"),
+    })
+    @Select("SELECT email, name, group_role, active, created_at FROM users WHERE email like  CONCAT('%', #{user.email}, '%') " +
+            "AND " +
+            "name LIKE CONCAT('%', #{user.name}, '%')  AND "+
+            "group_role LIKE CONCAT('%', #{user.groupRole}, '%') AND "+
+            "active LIKE CONCAT('%', #{active}, '%') AND"+
+            " is_delete = 0 "+
+            " ORDER BY created_at DESC ")
+    public List<User> findUserByOption2(@Param("user") User user, @Param("active") String active);
 //   get user with pagination
     @Results({
             @Result(property = "active", column = "active"),

@@ -16,7 +16,7 @@ public class User {
 
     private String groupRole;
     private boolean isDelete =false;
-
+    @Column(columnDefinition = "TINYINT default 1",  nullable = false)
     private boolean active;
     private String password;
     private String rememberToken;

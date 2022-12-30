@@ -47,6 +47,7 @@ public class UserAction extends ActionSupport  implements SessionAware, Paramete
     private int totalRecord;
     private String name, email, groups, password;
     private boolean active;
+    private String strActive;
 
     private User user;
     private String nameCurrentUser;
@@ -146,7 +147,13 @@ public class UserAction extends ActionSupport  implements SessionAware, Paramete
         return userRepository.findAll();
     }
 
+    public String getStrActive() {
+        return strActive;
+    }
 
+    public void setStrActive(String strActive) {
+        this.strActive = strActive;
+    }
 
     public User getUser(){
         return user;
@@ -237,17 +244,17 @@ public class UserAction extends ActionSupport  implements SessionAware, Paramete
         User user = new User(email, name, groups, active);
         System.out.println("SEARCH INPUT: "+ user);
         try {
-            userRepository.findUserByOption(user);
+            userRepository.findUserByOption2(user, strActive);
 
         }catch (Exception e){
             System.out.println(e);
         }
-        totalRecord = userRepository.findUserByOption(user).size();
+        totalRecord = userRepository.findUserByOption2(user, strActive).size();
 
 
         PageUtils pageUtils = new PageUtils(page, size, totalRecord);
         setTotalPages(pageUtils.getTotalPages());
-        this.users = userRepository.findUserByOptionHasPagin(user, pageUtils.getNext(), size);
+        this.users = userRepository.findUserByOptionHasPagin2(user,strActive, pageUtils.getNext(), size);
 
 
 

@@ -236,8 +236,8 @@ pageEncoding="UTF-8" %>
                                     </div>
                                     <div class="form-group row">
                                         <label for="modalDescription" class="col-sm-2 col-form-label"
-                                            >Mô tả<small class="text-danger">*</small></label
-                                        >
+                                            >Mô tả<small class="text-danger"></small
+                                        ></label>
                                         <div class="col-sm-10">
                                             <textarea
                                                 rows="3"
@@ -863,7 +863,7 @@ pageEncoding="UTF-8" %>
             function getSearchUsers(page = 0, size = 10) {
                 currentPage = page;
 
-                var active = mapDataSearch.active == '0' ? false : true;
+                // var active = mapDataSearch.active == '0' ? false : true;
                 var query =
                     'name=' +
                     mapDataSearch.name +
@@ -871,8 +871,8 @@ pageEncoding="UTF-8" %>
                     mapDataSearch.email +
                     '&groups=' +
                     mapDataSearch.groups +
-                    '&active=' +
-                    active;
+                    '&strActive=' +
+                    mapDataSearch.active;
                 $.ajax({
                     type: 'GET',
                     url: 'searchuser.do',
@@ -900,11 +900,11 @@ pageEncoding="UTF-8" %>
 
             $('#btnSave').on('click', async function (e) {
                 e.preventDefault();
-                $('#searchForm').trigger('reset');
                 if (!isUpdate) {
                     if (await saveOrUpdate(false)) {
                         $('#insertForm').trigger('reset');
                         $('#exampleModal').modal('hide');
+                        $('#searchForm').trigger('reset');
                     }
                 } else if (isUpdate) {
                     if (await saveOrUpdate(true)) {
@@ -1092,7 +1092,9 @@ pageEncoding="UTF-8" %>
 
             // change action update or insert product
             function handleChangeActionProduct(isUpdate) {
-                $('#searchProductForm').trigger('reset');
+                resetNotify();
+                // $('#searchProductForm').trigger('reset');
+                $('#insertProductForm').trigger('reset');
                 this.isUpdateProduct = isUpdate;
                 // $('#modalEmail').attr('disabled', false);
                 // $('#modalEmail').attr('readonly', false);
